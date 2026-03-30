@@ -1,28 +1,160 @@
-function doPost(e) {
-  try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOOMOR | Ultra Edition</title>
 
-    // مهم جداً: قراءة JSON بشكل صحيح
-    const data = JSON.parse(e.postData.contents);
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    const username = data.username;
-    const proof = data.proof;
-    const wallet = data.wallet;
-
-    sheet.appendRow([
-      new Date(),
-      username,
-      proof,
-      wallet
-    ]);
-
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
-
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
+<style>
+/* نفس تصميمك بدون تغيير */
+body {
+    background:#000;
+    color:#fff;
+    font-family: Arial;
+    margin:0;
+    overflow:hidden;
 }
+
+/* زر */
+.mint-btn {
+    position:fixed;
+    bottom:40px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:15px 30px;
+    background:#ff0000;
+    border:none;
+    color:#fff;
+    font-weight:bold;
+    border-radius:20px;
+    cursor:pointer;
+}
+
+/* مودال الفورم */
+.form-modal {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.9);
+    display:none;
+    justify-content:center;
+    align-items:center;
+}
+
+.form-box {
+    background:#111;
+    padding:30px;
+    border-radius:20px;
+    width:90%;
+    max-width:400px;
+}
+
+input {
+    width:100%;
+    margin-bottom:15px;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+}
+
+.submit-btn {
+    width:100%;
+    padding:14px;
+    background:#ff0000;
+    border:none;
+    color:#fff;
+    font-weight:bold;
+    border-radius:10px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1 style="text-align:center;margin-top:100px;">IT'S GLOOMOR</h1>
+
+<button class="mint-btn" onclick="openForm()">JOIN MISSION</button>
+
+<!-- FORM -->
+<div class="form-modal" id="formModal">
+    <div class="form-box">
+        <h2>MISSION FORM</h2>
+
+        <input type="text" id="username" placeholder="@username">
+        <input type="url" id="proof" placeholder="Tweet Link">
+        <input type="text" id="wallet" placeholder="0x wallet">
+
+        <button class="submit-btn" onclick="submitData()">SUBMIT</button>
+        <p onclick="closeForm()" style="cursor:pointer;text-align:center;margin-top:10px;">CLOSE</p>
+    </div>
+</div>
+
+<script>
+
+// فتح / قفل
+function openForm(){
+    document.getElementById("formModal").style.display="flex";
+}
+
+function closeForm(){
+    document.getElementById("formModal").style.display="none";
+}
+
+// الإرسال
+function submitData(){
+
+    const username = document.getElementById('username').value;
+    const proof = document.getElementById('proof').value;
+    const wallet = document.getElementById('wallet').value;
+
+    const evmRegex = /^0x[a-fA-F0-9]{40}$/;
+
+    if(username.length < 3){
+        alert("Invalid username");
+        return;
+    }
+
+    if(!proof.includes("x.com") && !proof.includes("twitter.com")){
+        alert("Invalid link");
+        return;
+    }
+
+    if(!evmRegex.test(wallet)){
+        alert("Invalid wallet");
+        return;
+    }
+
+    const data = {
+        username: username,
+        proof: proof,
+        wallet: wallet
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.status === "success"){
+            alert("DONE ✅");
+            closeForm();
+        }else{
+            alert("ERROR");
+        }
+    })
+    .catch(()=>{
+        alert("NETWORK ERROR");
+    });
+
+}
+
+</script>
+
+</body>
+</html>
