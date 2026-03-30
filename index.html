@@ -2,210 +2,309 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOOMOR | MISSION CONTROL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka+One&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GLOOMOR | Ultra Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;700;900&display=swap');
+
         :root {
-            --sky-blue: #87CEEB;
-            --neon-red: #ff3131;
-            --dark-text: #1a2a3a;
-            --glass: rgba(255, 255, 255, 0.7);
+            --primary: #ffffff;
+            --accent: #ff0000;
+            --bg-black: #000000;
+            --glass: rgba(255, 255, 255, 0.05);
+            --transition-speed: 0.8s;
         }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 100%);
-            font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden; display: flex; justify-content: center; align-items: center;
+        /* منع التحديد والمربعات الزرقاء */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            outline: none !important;
         }
 
-        /* Sky Background */
-        .sky-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .wind-text { position: absolute; width: 200%; font-family: 'Bungee', cursive; font-size: 6rem; color: rgba(255, 255, 255, 0.2); white-space: nowrap; animation: windBlow 15s linear infinite; }
-        @keyframes windBlow { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-        /* Main Card */
-        .main-stage {
-            position: relative; z-index: 10; width: 85%; max-width: 450px;
-            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 3px solid #fff; padding: 40px 30px; border-radius: 40px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+        body {
+            background-color: var(--bg-black);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            color: var(--primary);
+            transition: background-color var(--transition-speed);
         }
 
-        .step { display: none; }
-        .step.active { display: block; }
+        body.gloomor-active {
+            background-color: #1a0000;
+        }
 
-        /* Inputs & Buttons */
-        input {
-            width: 100%; padding: 16px; border-radius: 20px; border: 2px solid transparent;
-            margin-bottom: 20px; box-sizing: border-box; font-family: inherit; font-weight: bold;
+        /* --- BACKGROUND WALL --- */
+        .bg-container {
+            position: fixed;
+            inset: -20%;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transform: rotate(-5deg);
+            pointer-events: none;
+            opacity: 0.12;
+            transition: opacity 0.5s;
+        }
+
+        .bg-row {
+            display: flex;
+            white-space: nowrap;
+            line-height: 0.6;
+            will-change: transform;
+        }
+
+        .bg-row span {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(60px, 12vw, 120px);
+            color: var(--primary);
+            padding: 0 10px;
+            text-transform: uppercase;
+            transition: color var(--transition-speed);
+        }
+
+        .gloomor-active .bg-row span {
+            color: var(--accent);
+        }
+
+        /* --- HEADER NAV --- */
+        .header-nav {
+            position: fixed;
+            top: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 10px 25px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            font-weight: 700;
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
             transition: 0.3s;
+            opacity: 0.5;
         }
-        input:focus { border-color: var(--neon-red); outline: none; }
 
-        .nav-btn {
-            background: var(--dark-text); color: #fff; border: none; padding: 18px;
-            border-radius: 25px; font-size: 1.1rem; font-weight: 800; cursor: pointer;
-            width: 100%; transition: 0.3s; text-transform: uppercase;
-        }
-        .nav-btn:hover:not(:disabled) { background: var(--neon-red); transform: translateY(-3px); }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .nav-item:hover { opacity: 1; }
 
-        /* Custom Modal (Error Pop-up) */
-        #errorModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center;
+        /* GLOOMOR MODE BUTTON */
+        .mode-btn {
+            background: var(--primary);
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 10px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 30px; max-width: 300px;
-            text-align: center; border: 4px solid var(--neon-red);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .social-link {
-            display: block; background: #fff; padding: 18px; border-radius: 20px;
-            margin-bottom: 15px; text-decoration: none; color: var(--dark-text);
-            font-weight: 900; border: 2px solid #eee; transition: 0.3s;
+        .gloomor-active .mode-btn {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent);
         }
-        .social-link.done { background: #d4edda; color: #155724; border-color: #c3e6cb; }
 
-        .logo-img { width: 100px; margin-bottom: 20px; transition: 0.5s; cursor: pointer; }
+        /* --- MAIN LOGO --- */
+        .hero {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .it-is-gloomor {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2.5rem, 12vw, 9.5rem);
+            text-transform: uppercase;
+            line-height: 0.8;
+            text-align: center;
+            cursor: default;
+        }
+
+        .char {
+            display: inline-block;
+            transition: transform 0.3s, color 0.3s, text-shadow 0.3s;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        .char:active {
+            transform: scale(1.2) translateZ(50px);
+            color: #fff;
+            text-shadow: 0 0 50px #fff;
+        }
+
+        .gloomor-active .char {
+            color: var(--accent);
+        }
+
+        .gloomor-active .char:active {
+            color: #ff4d4d;
+            text-shadow: 0 0 50px #ff0000;
+        }
+
+        /* --- MODALS --- */
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            z-index: 200; display: none;
+            justify-content: center; align-items: center;
+            opacity: 0;
+        }
+
+        .modal-box {
+            background: #fff; color: #000;
+            width: 90%; max-width: 400px; padding: 40px;
+            border-radius: 40px; text-align: center;
+        }
+
+        .gloomor-active .modal-box {
+            background: #1a0000;
+            color: #fff;
+            border: 2px solid var(--accent);
+        }
+
+        .info-item {
+            background: #f8f8f8; padding: 16px; border-radius: 20px;
+            display: flex; justify-content: space-between; margin-bottom: 10px;
+        }
+
+        .gloomor-active .info-item { background: #330000; }
+        .gloomor-active .info-value { color: var(--accent); }
+
+        .x-icon-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 80px; height: 80px; background: #000; color: #fff;
+            border-radius: 24px; margin-top: 10px; transition: 0.3s;
+        }
+        .gloomor-active .x-icon-btn { background: var(--accent); }
+
+        .vignette {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle, transparent 20%, black 150%);
+            z-index: 5; pointer-events: none;
+        }
     </style>
 </head>
-<body>
+<body id="body">
 
-    <div id="errorModal">
-        <div class="modal-content">
-            <h3 style="color: var(--neon-red); margin-top: 0;">ERROR! ⚠️</h3>
-            <p id="errorMsg">Invalid Input</p>
-            <button class="nav-btn" onclick="closeModal()">TRY AGAIN</button>
+    <div class="vignette"></div>
+
+    <nav class="header-nav">
+        <div class="nav-inner">
+            <div class="nav-item" onclick="openModal('community')">Community</div>
+            <div class="mode-btn" onclick="toggleGloomorMode()">GLOOMOR MODE</div>
+            <div class="nav-item" onclick="openModal('mint')">Mint</div>
+        </div>
+    </nav>
+
+    <div class="bg-container" id="bg-wall"></div>
+
+    <div class="hero">
+        <h1 class="it-is-gloomor" id="main-title">
+            </h1>
+    </div>
+
+    <div id="community" class="modal">
+        <div class="modal-box">
+            <h2 style="font-family:'Archivo Black'; margin-bottom:20px;">COMMUNITY</h2>
+            <a href="https://x.com/itsGLOOMOR" target="_blank" class="x-icon-btn">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <div style="margin-top:20px; font-size:10px; cursor:pointer; opacity:0.5;" onclick="closeModal('community')">CLOSE</div>
         </div>
     </div>
 
-    <div class="sky-container">
-        <div class="wind-text">GLOOMOR MISSION • SKY IS NOT THE LIMIT • GLOOMOR</div>
-    </div>
-
-    <div class="main-stage">
-        <img src="G.png" class="logo-img" id="logoMain">
-
-        <div class="step" id="s1">
-            <h1 style="font-family: 'Fredoka One'; color: var(--neon-red); font-size: 3rem;">START</h1>
-            <button class="nav-btn" onclick="go(2)">INITIALIZE</button>
-        </div>
-
-        <div class="step" id="s2">
-            <h2>ID CHECK</h2>
-            <input type="text" id="uInput" placeholder="@YourXUsername" oninput="saveData()">
-            <button class="nav-btn" onclick="validateStep2()">NEXT</button>
-        </div>
-
-        <div class="step" id="s3">
-            <h2>FOLLOW X</h2>
-            <a href="https://x.com/itsgloomor" target="_blank" class="social-link" id="followLink" onclick="verify('b3', this)">@ITSGLOOMOR</a>
-            <button class="nav-btn" id="b3" disabled onclick="go(4)">NEXT</button>
-        </div>
-
-        <div class="step" id="s4">
-            <h2>PROOF OF ACTION</h2>
-            <p style="font-size: 0.9rem; color: #555;">Paste your Comment/RT Link below:</p>
-            <input type="url" id="pInput" placeholder="https://x.com/.../status/..." oninput="saveData()">
-            <button class="nav-btn" onclick="validateProof()">VERIFY LINK</button>
-        </div>
-
-        <div class="step" id="s5">
-            <h2>EVM WALLET</h2>
-            <input type="text" id="evmAddr" placeholder="0x..." oninput="saveData()">
-            <button class="nav-btn" onclick="finalSubmit()">SUBMIT MISSION</button>
-        </div>
-
-        <div class="step" id="s6">
-            <h1 style="color: #2e7d32; font-family: 'Fredoka One';">MISSION COMPLETE!</h1>
-            <p>Your data is secured. You cannot enter twice.</p>
+    <div id="mint" class="modal">
+        <div class="modal-box">
+            <h2 style="font-family:'Archivo Black'; margin-bottom:20px;">MINT INFO</h2>
+            <div class="info-item"><span style="font-size:10px; opacity:0.5;">SUPPLY</span><span class="info-value" style="font-weight:900;">2222</span></div>
+            <div class="info-item"><span style="font-size:10px; opacity:0.5;">CHAIN</span><span class="info-value" style="font-weight:900;">ETH</span></div>
+            <div class="info-item"><span style="font-size:10px; opacity:0.5;">PRICE</span><span class="info-value" style="font-weight:900;">TBA</span></div>
+            <div class="info-item"><span style="font-size:10px; opacity:0.5;">DATE</span><span class="info-value" style="font-weight:900;">TBA</span></div>
+            <div style="margin-top:20px; font-size:10px; cursor:pointer; opacity:0.5;" onclick="closeModal('mint')">CLOSE</div>
         </div>
     </div>
 
     <script>
-        // التحقق من التسجيل المسبق فور التحميل
-        window.onload = () => {
-            if (localStorage.getItem('gloomor_submitted') === 'true') {
-                go(6);
-                return;
-            }
-            // استعادة التقدم
-            const savedStep = localStorage.getItem('gloomor_step') || 1;
-            restoreData();
-            go(savedStep);
-        };
+        // تكسير النص إلى حروف تفاعلية
+        const titleContainer = document.getElementById('main-title');
+        const textContent = "IT'S GLOOMOR";
+        titleContainer.innerHTML = textContent.split('').map(char => 
+            char === ' ' ? '<br>' : `<span class="char">${char}</span>`
+        ).join('');
 
-        function go(n) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('s' + n).classList.add('active');
-            localStorage.setItem('gloomor_step', n);
+        // توليد الخلفية
+        const bgWall = document.getElementById('bg-wall');
+        for(let i=0; i<25; i++) {
+            const row = document.createElement('div');
+            row.className = 'bg-row';
+            row.innerHTML = `<span>GLOOMOR</span>`.repeat(12);
+            bgWall.appendChild(row);
         }
 
-        function showError(msg) {
-            document.getElementById('errorMsg').innerText = msg;
-            document.getElementById('errorModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('errorModal').style.display = 'none';
-        }
-
-        function saveData() {
-            localStorage.setItem('uInput', document.getElementById('uInput').value);
-            localStorage.setItem('pInput', document.getElementById('pInput').value);
-            localStorage.setItem('evmAddr', document.getElementById('evmAddr').value);
-        }
-
-        function restoreData() {
-            document.getElementById('uInput').value = localStorage.getItem('uInput') || '';
-            document.getElementById('pInput').value = localStorage.getItem('pInput') || '';
-            document.getElementById('evmAddr').value = localStorage.getItem('evmAddr') || '';
-        }
-
-        function validateStep2() {
-            const val = document.getElementById('uInput').value;
-            if (val.length < 3) {
-                showError("Please enter a valid X username.");
-            } else {
-                go(3);
-            }
-        }
-
-        function verify(id, el) {
-            el.classList.add('done');
-            el.innerHTML = "FOLLOWED ✓";
-            document.getElementById(id).disabled = false;
-        }
-
-        function validateProof() {
-            const url = document.getElementById('pInput').value;
-            // فحص صارم: يجب أن يكون رابطاً ومن X/Twitter ويحتوي على معرف التغريدة
-            const xRegex = /^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+/;
+        // تبديل الوضع (GLOOMOR MODE)
+        let isGloomor = false;
+        function toggleGloomorMode() {
+            isGloomor = !isGloomor;
+            document.body.classList.toggle('gloomor-active');
             
-            if (xRegex.test(url)) {
-                go(5);
+            // انميشن اهتزاز عند التفعيل
+            if(isGloomor) {
+                gsap.to(".hero", { x: 5, y: 5, duration: 0.05, repeat: 10, yoyo: true });
+                gsap.to(".bg-container", { opacity: 0.3, duration: 0.3 });
             } else {
-                showError("INVALID LINK! You must provide a direct link to your comment or RT on X.");
+                gsap.to(".bg-container", { opacity: 0.12, duration: 0.3 });
             }
         }
 
-        function finalSubmit() {
-            const addr = document.getElementById('evmAddr').value;
-            const evmRegex = /^0x[a-fA-F0-9]{40}$/;
+        // أنيميشن الخلفية
+        gsap.to(".bg-row:nth-child(even)", { xPercent: -30, duration: 25, repeat: -1, yoyo: true, ease: "none" });
+        gsap.to(".bg-row:nth-child(odd)", { xPercent: 30, duration: 25, repeat: -1, yoyo: true, ease: "none" });
 
-            if (evmRegex.test(addr)) {
-                // حفظ الحالة النهائية لمنع الدخول مجدداً
-                localStorage.setItem('gloomor_submitted', 'true');
-                go(6);
-            } else {
-                showError("INVALID WALLET! Please enter a valid 0x address.");
-            }
+        // بارالاكس
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 60;
+            const y = (e.clientY / window.innerHeight - 0.5) * 60;
+            gsap.to("#bg-wall", { x: x, y: y, duration: 2 });
+        });
+
+        // النوافذ
+        function openModal(id) {
+            const m = document.getElementById(id);
+            m.style.display = 'flex';
+            gsap.to(m, { opacity: 1, duration: 0.4 });
+        }
+
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            gsap.to(m, { opacity: 0, duration: 0.3, onComplete: () => m.style.display = 'none' });
         }
     </script>
 </body>
