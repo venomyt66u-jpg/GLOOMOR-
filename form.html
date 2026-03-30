@@ -43,15 +43,6 @@
             to { transform: translateX(100vw); opacity: 0; }
         }
 
-        .cloud-svg {
-            position: absolute; fill: var(--white); opacity: 0.5;
-            animation: floatCloud 25s linear infinite;
-        }
-
-        @keyframes floatCloud {
-            from { left: -300px; } to { left: 100vw; }
-        }
-
         /* --- المربع الزجاجي العائم --- */
         .glass-box {
             position: relative; z-index: 10;
@@ -73,11 +64,6 @@
         .interactive-text span:hover {
             transform: scale(1.4) translateY(-10px) rotate(10deg);
             color: var(--red);
-        }
-
-        .interactive-text span:active {
-            transform: scale(0.8);
-            text-shadow: 0 0 20px var(--red);
         }
 
         .logo-main {
@@ -107,6 +93,7 @@
             border: none; background: rgba(255,255,255,0.8);
             margin-bottom: 20px; box-sizing: border-box;
             font-weight: bold; font-size: 1rem; color: var(--dark);
+            outline: none;
         }
 
         .nav-link {
@@ -116,14 +103,13 @@
         }
 
         .nav-link:hover { background: var(--red); transform: translateY(-3px); }
-        .nav-link.done { background: #00C853; }
+        .nav-link.done { background: #00C853; pointer-events: none; }
 
     </style>
 </head>
 <body>
 
-    <div class="sky-scene" id="sky">
-        </div>
+    <div class="sky-scene" id="sky"></div>
 
     <div class="glass-box">
         <img src="G.png" class="logo-main" id="logo" alt="G">
@@ -142,19 +128,19 @@
             <h2 class="interactive-text">SOCIAL</h2>
             <a href="https://x.com/itsgloomor" target="_blank" class="nav-link" id="lk1" onclick="ok('lk1', 'btnNext1')">FOLLOW X</a>
             <a href="https://x.com/i/status/2038344282248012043" target="_blank" class="nav-link" id="lk2" onclick="ok('lk2', 'btnNext1')">LIKE/RT</a>
-            <a href="#" class="nav-link" style="opacity:0.3" id="btnNext1" onclick="to(4)">CONTINUE</a>
+            <a href="#" class="nav-link" style="opacity:0.3; pointer-events: none;" id="btnNext1" onclick="to(4)">CONTINUE</a>
         </div>
 
         <div class="step" id="p4">
             <h2 class="interactive-text">PROOF</h2>
-            <input type="text" id="proof" placeholder="URL">
+            <input type="text" id="proof" placeholder="TWEET URL">
             <a href="#" class="nav-link" onclick="to(5)">VERIFY</a>
         </div>
 
         <div class="step" id="p5">
             <h2 class="interactive-text">WALLET</h2>
             <input type="text" id="evm" placeholder="0x...">
-            <a href="#" class="nav-link" onclick="send()">SUBMIT</a>
+            <a href="#" class="nav-link" id="finalSubmit" onclick="event.preventDefault(); send()">SUBMIT</a>
         </div>
 
         <div class="step" id="p6">
@@ -164,8 +150,11 @@
     </div>
 
     <script>
-        // توليد الرياح عشوائياً
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec';
+
+        // تأثير الرياح
         function createWind() {
+            const sky = document.getElementById('sky');
             for(let i=0; i<15; i++){
                 let s = document.createElement('div');
                 s.className = 'wind-streak';
@@ -173,82 +162,77 @@
                 s.style.top = Math.random() * 100 + 'vh';
                 s.style.left = '-200px';
                 s.style.animationDelay = Math.random() * 5 + 's';
-                document.getElementById('sky').appendChild(s);
+                sky.appendChild(s);
             }
         }
 
-        // تفكيك الحروف لجعلها تفاعلية
+        // تفكيك الحروف
         function splitText() {
             document.querySelectorAll('.interactive-text').forEach(el => {
+                if (el.dataset.split === "true") return;
                 let txt = el.innerText;
                 el.innerHTML = txt.split('').map(char => `<span>${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+                el.dataset.split = "true";
             });
         }
 
+        // الانتقال بين الصفحات
         function to(step) {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById('p' + step).classList.add('active');
             splitText();
         }
 
+        // التحقق من المهام الاجتماعية
         let task1 = false, task2 = false;
         function ok(id, nextId) {
-            document.getElementById(id).classList.add('done');
-            document.getElementById(id).innerText = "DONE ✓";
+            const el = document.getElementById(id);
+            el.classList.add('done');
+            el.innerText = "DONE ✓";
             if(id === 'lk1') task1 = true;
             if(id === 'lk2') task2 = true;
-            if(task1 && task2) document.getElementById(nextId).style.opacity = "1";
+            if(task1 && task2) {
+                const nextBtn = document.getElementById(nextId);
+                nextBtn.style.opacity = "1";
+                nextBtn.style.pointerEvents = "auto";
+            }
         }
 
+        // إرسال البيانات لجوجل شيت
         function send() {
-    const addr = document.getElementById('evm').value;
-    const username = document.getElementById('user').value;
-    const proof = document.getElementById('proof').value;
+            const name = document.getElementById('user').value;
+            const proof = document.getElementById('proof').value;
+            const wallet = document.getElementById('evm').value;
+            const btn = document.getElementById('finalSubmit');
 
-    // validation
-    if (!/^0x[a-fA-F0-9]{40}$/.test(addr)) {
-        alert("EVM 0x Only!");
-        return;
-    }
+            if(!name || !proof) {
+                alert("Please fill all fields!");
+                return;
+            }
 
-    if (username.length < 3) {
-        alert("Invalid username");
-        return;
-    }
+            if(!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+                alert("Invalid EVM Address!");
+                return;
+            }
 
-    if (!proof.includes("x.com") && !proof.includes("twitter.com")) {
-        alert("Invalid proof link");
-        return;
-    }
+            // تعطيل الزر أثناء الإرسال
+            btn.innerText = "SENDING...";
+            btn.style.pointerEvents = "none";
 
-    const data = {
-        username: username,
-        proof: proof,
-        wallet: addr
-    };
-
-    fetch("https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(res => {
-        if (res.status === "success") {
-            to(6); // نفس السيستم بتاعك
-        } else {
-            alert("Server Error");
-        }
-    })
-    .catch(() => {
-        alert("Network Error");
-    });
-}
-            const addr = document.getElementById('evm').value;
-            if(/^0x[a-fA-F0-9]{40}$/.test(addr)) to(6);
-            else alert("EVM 0x Only!");
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, proof, wallet })
+            })
+            .then(() => to(6))
+            .catch(err => {
+                console.error(err);
+                alert("Error! Try again.");
+                btn.innerText = "SUBMIT";
+                btn.style.pointerEvents = "auto";
+            });
         }
 
         // تفاعل اللوجو
