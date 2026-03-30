@@ -1,212 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOOMOR | MISSION CONTROL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka+One&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --sky-blue: #87CEEB;
-            --neon-red: #ff3131;
-            --dark-text: #1a2a3a;
-            --glass: rgba(255, 255, 255, 0.7);
-        }
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 100%);
-            font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden; display: flex; justify-content: center; align-items: center;
-            -webkit-tap-highlight-color: transparent;
-        }
+    // مهم جداً: قراءة JSON بشكل صحيح
+    const data = JSON.parse(e.postData.contents);
 
-        /* Sky Background */
-        .sky-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-        .wind-text { position: absolute; width: 200%; font-family: 'Bungee', cursive; font-size: 6rem; color: rgba(255, 255, 255, 0.2); white-space: nowrap; animation: windBlow 15s linear infinite; }
-        @keyframes windBlow { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    const username = data.username;
+    const proof = data.proof;
+    const wallet = data.wallet;
 
-        /* Main Card */
-        .main-stage {
-            position: relative; z-index: 10; width: 85%; max-width: 450px;
-            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 3px solid #fff; padding: 40px 30px; border-radius: 40px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-        }
+    sheet.appendRow([
+      new Date(),
+      username,
+      proof,
+      wallet
+    ]);
 
-        .step { display: none; }
-        .step.active { display: block; }
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
 
-        /* Inputs & Buttons */
-        input {
-            width: 100%; padding: 16px; border-radius: 20px; border: 2px solid transparent;
-            margin-bottom: 20px; box-sizing: border-box; font-family: inherit; font-weight: bold;
-            transition: 0.3s;
-        }
-        input:focus { border-color: var(--neon-red); outline: none; }
-
-        .nav-btn {
-            background: var(--dark-text); color: #fff; border: none; padding: 18px;
-            border-radius: 25px; font-size: 1.1rem; font-weight: 800; cursor: pointer;
-            width: 100%; transition: 0.3s; text-transform: uppercase;
-        }
-        .nav-btn:hover:not(:disabled) { background: var(--neon-red); transform: translateY(-3px); }
-        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Custom Modal (Error Pop-up) */
-        #errorModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: white; padding: 30px; border-radius: 30px; max-width: 300px;
-            text-align: center; border: 4px solid var(--neon-red);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .social-link {
-            display: block; background: #fff; padding: 18px; border-radius: 20px;
-            margin-bottom: 15px; text-decoration: none; color: var(--dark-text);
-            font-weight: 900; border: 2px solid #eee; transition: 0.3s;
-        }
-        .social-link.done { background: #d4edda; color: #155724; border-color: #c3e6cb; }
-
-        .logo-img { width: 100px; margin-bottom: 20px; transition: 0.5s; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-    <div id="errorModal">
-        <div class="modal-content">
-            <h3 style="color: var(--neon-red); margin-top: 0;">ERROR! ⚠️</h3>
-            <p id="errorMsg">Invalid Input</p>
-            <button class="nav-btn" onclick="closeModal()">TRY AGAIN</button>
-        </div>
-    </div>
-
-    <div class="sky-container">
-        <div class="wind-text">GLOOMOR MISSION • SKY IS NOT THE LIMIT • GLOOMOR</div>
-    </div>
-
-    <div class="main-stage">
-        <img src="G.png" class="logo-img" id="logoMain">
-
-        <div class="step" id="s1">
-            <h1 style="font-family: 'Fredoka One'; color: var(--neon-red); font-size: 3rem;">START</h1>
-            <button class="nav-btn" onclick="go(2)">INITIALIZE</button>
-        </div>
-
-        <div class="step" id="s2">
-            <h2>ID CHECK</h2>
-            <input type="text" id="uInput" placeholder="@YourXUsername" oninput="saveData()">
-            <button class="nav-btn" onclick="validateStep2()">NEXT</button>
-        </div>
-
-        <div class="step" id="s3">
-            <h2>FOLLOW X</h2>
-            <a href="https://x.com/itsgloomor" target="_blank" class="social-link" id="followLink" onclick="verify('b3', this)">@ITSGLOOMOR</a>
-            <button class="nav-btn" id="b3" disabled onclick="go(4)">NEXT</button>
-        </div>
-
-        <div class="step" id="s4">
-            <h2>PROOF OF ACTION</h2>
-            <p style="font-size: 0.9rem; color: #555;">Paste your Comment/RT Link below:</p>
-            <input type="url" id="pInput" placeholder="https://x.com/.../status/..." oninput="saveData()">
-            <button class="nav-btn" onclick="validateProof()">VERIFY LINK</button>
-        </div>
-
-        <div class="step" id="s5">
-            <h2>EVM WALLET</h2>
-            <input type="text" id="evmAddr" placeholder="0x..." oninput="saveData()">
-            <button class="nav-btn" onclick="finalSubmit()">SUBMIT MISSION</button>
-        </div>
-
-        <div class="step" id="s6">
-            <h1 style="color: #2e7d32; font-family: 'Fredoka One';">MISSION COMPLETE!</h1>
-            <p>Your data is secured. You cannot enter twice.</p>
-        </div>
-    </div>
-
-    <script>
-        // التحقق من التسجيل المسبق فور التحميل
-        window.onload = () => {
-            if (localStorage.getItem('gloomor_submitted') === 'true') {
-                go(6);
-                return;
-            }
-            // استعادة التقدم
-            const savedStep = localStorage.getItem('gloomor_step') || 1;
-            restoreData();
-            go(savedStep);
-        };
-
-        function go(n) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('s' + n).classList.add('active');
-            localStorage.setItem('gloomor_step', n);
-        }
-
-        function showError(msg) {
-            document.getElementById('errorMsg').innerText = msg;
-            document.getElementById('errorModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('errorModal').style.display = 'none';
-        }
-
-        function saveData() {
-            localStorage.setItem('uInput', document.getElementById('uInput').value);
-            localStorage.setItem('pInput', document.getElementById('pInput').value);
-            localStorage.setItem('evmAddr', document.getElementById('evmAddr').value);
-        }
-
-        function restoreData() {
-            document.getElementById('uInput').value = localStorage.getItem('uInput') || '';
-            document.getElementById('pInput').value = localStorage.getItem('pInput') || '';
-            document.getElementById('evmAddr').value = localStorage.getItem('evmAddr') || '';
-        }
-
-        function validateStep2() {
-            const val = document.getElementById('uInput').value;
-            if (val.length < 3) {
-                showError("Please enter a valid X username.");
-            } else {
-                go(3);
-            }
-        }
-
-        function verify(id, el) {
-            el.classList.add('done');
-            el.innerHTML = "FOLLOWED ✓";
-            document.getElementById(id).disabled = false;
-        }
-
-        function validateProof() {
-            const url = document.getElementById('pInput').value;
-            // فحص صارم: يجب أن يكون رابطاً ومن X/Twitter ويحتوي على معرف التغريدة
-            const xRegex = /^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]+\/status\/[0-9]+/;
-            
-            if (xRegex.test(url)) {
-                go(5);
-            } else {
-                showError("INVALID LINK! You must provide a direct link to your comment or RT on X.");
-            }
-        }
-
-        function finalSubmit() {
-            const addr = document.getElementById('evmAddr').value;
-            const evmRegex = /^0x[a-fA-F0-9]{40}$/;
-
-            if (evmRegex.test(addr)) {
-                // حفظ الحالة النهائية لمنع الدخول مجدداً
-                localStorage.setItem('gloomor_submitted', 'true');
-                go(6);
-            } else {
-                showError("INVALID WALLET! Please enter a valid 0x address.");
-            }
-        }
-    </script>
-</body>
-</html>
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
