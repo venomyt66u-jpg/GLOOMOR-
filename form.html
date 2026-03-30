@@ -6,112 +6,33 @@
     <title>GLOOMOR | AIR</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --sky: #A7E2FF;
-            --red: #FF0000;
-            --white: #FFFFFF;
-            --dark: #0F172A;
-        }
-
-        /* الثبات على اللايت مود */
+        :root { --sky: #A7E2FF; --red: #FF0000; --white: #FFFFFF; --dark: #0F172A; }
         @media (prefers-color-scheme: dark) { body { background: var(--sky) !important; } }
-
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background: var(--sky);
-            font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* --- خلفية الرياح المتطورة --- */
-        .sky-scene {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
-        }
-
-        .wind-streak {
-            position: absolute; background: rgba(255,255,255,0.6);
-            height: 2px; border-radius: 2px;
-            animation: blow 3s linear infinite;
-        }
-
-        @keyframes blow {
-            from { transform: translateX(-200px); opacity: 0; }
-            50% { opacity: 1; }
-            to { transform: translateX(100vw); opacity: 0; }
-        }
-
-        /* --- المربع الزجاجي العائم --- */
-        .glass-box {
-            position: relative; z-index: 10;
-            width: 90%; max-width: 420px;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 2px solid var(--white);
-            border-radius: 40px; padding: 50px 30px;
-            text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.05);
-        }
-
-        /* --- أنيميشن الحروف التفاعلي --- */
-        .interactive-text span {
-            display: inline-block; cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none;
-        }
-
-        .interactive-text span:hover {
-            transform: scale(1.4) translateY(-10px) rotate(10deg);
-            color: var(--red);
-        }
-
-        .logo-main {
-            width: 100px; cursor: pointer; margin-bottom: 30px;
-            animation: bounceLogo 4s ease-in-out infinite;
-        }
-
-        @keyframes bounceLogo {
-            0%, 100% { transform: scale(1) translateY(0); }
-            50% { transform: scale(1.1) translateY(-15px); }
-        }
-
-        /* --- الأزرار والمدخلات --- */
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--sky); font-family: 'Space Grotesk', sans-serif; overflow: hidden; display: flex; justify-content: center; align-items: center; -webkit-tap-highlight-color: transparent; }
+        .sky-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .wind-streak { position: absolute; background: rgba(255,255,255,0.6); height: 2px; border-radius: 2px; animation: blow 3s linear infinite; }
+        @keyframes blow { from { transform: translateX(-200px); opacity: 0; } 50% { opacity: 1; } to { transform: translateX(100vw); opacity: 0; } }
+        .glass-box { position: relative; z-index: 10; width: 90%; max-width: 420px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 2px solid var(--white); border-radius: 40px; padding: 50px 30px; text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.05); }
+        .interactive-text span { display: inline-block; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); user-select: none; }
+        .interactive-text span:hover { transform: scale(1.4) translateY(-10px) rotate(10deg); color: var(--red); }
+        .logo-main { width: 100px; cursor: pointer; margin-bottom: 30px; animation: bounceLogo 4s ease-in-out infinite; }
+        @keyframes bounceLogo { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-15px); } }
         .step { display: none; }
         .step.active { display: block; animation: slideIn 0.5s ease forwards; }
-
         @keyframes slideIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-        .btn-ct {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 3rem; color: var(--red);
-            cursor: pointer; text-transform: uppercase;
-        }
-
-        input {
-            width: 100%; padding: 18px; border-radius: 20px;
-            border: none; background: rgba(255,255,255,0.8);
-            margin-bottom: 20px; box-sizing: border-box;
-            font-weight: bold; font-size: 1rem; color: var(--dark);
-            outline: none;
-        }
-
-        .nav-link {
-            display: block; background: var(--dark); color: var(--white);
-            padding: 18px; border-radius: 20px; text-decoration: none;
-            font-weight: bold; margin-bottom: 15px; transition: 0.3s;
-        }
-
+        .btn-ct { font-family: 'Syncopate', sans-serif; font-size: 3rem; color: var(--red); cursor: pointer; text-transform: uppercase; }
+        input { width: 100%; padding: 18px; border-radius: 20px; border: none; background: rgba(255,255,255,0.8); margin-bottom: 20px; box-sizing: border-box; font-weight: bold; font-size: 1rem; color: var(--dark); outline: none; }
+        .nav-link { display: block; background: var(--dark); color: var(--white); padding: 18px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-bottom: 15px; transition: 0.3s; }
         .nav-link:hover { background: var(--red); transform: translateY(-3px); }
         .nav-link.done { background: #00C853; pointer-events: none; }
-
+        .error-msg { color: var(--red); font-weight: bold; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="sky-scene" id="sky"></div>
 
-    <div class="glass-box">
+    <div class="glass-box" id="mainBox">
         <img src="G.png" class="logo-main" id="logo" alt="G">
 
         <div class="step active" id="p1">
@@ -120,26 +41,26 @@
 
         <div class="step" id="p2">
             <h2 class="interactive-text">@USER</h2>
-            <input type="text" id="user" placeholder="@NAME?">
+            <input type="text" id="user" placeholder="@NAME?" oninput="saveData()">
             <a href="#" class="nav-link" onclick="to(3)">NEXT</a>
         </div>
 
         <div class="step" id="p3">
             <h2 class="interactive-text">SOCIAL</h2>
-            <a href="https://x.com/itsgloomor" target="_blank" class="nav-link" id="lk1" onclick="ok('lk1', 'btnNext1')">FOLLOW X</a>
-            <a href="https://x.com/i/status/2038344282248012043" target="_blank" class="nav-link" id="lk2" onclick="ok('lk2', 'btnNext1')">LIKE/RT</a>
+            <a href="https://x.com/itsgloomor" target="_blank" class="nav-link" id="lk1" onclick="ok('lk1')">FOLLOW X</a>
+            <a href="https://x.com/i/status/2038344282248012043" target="_blank" class="nav-link" id="lk2" onclick="ok('lk2')">LIKE/RT</a>
             <a href="#" class="nav-link" style="opacity:0.3; pointer-events: none;" id="btnNext1" onclick="to(4)">CONTINUE</a>
         </div>
 
         <div class="step" id="p4">
             <h2 class="interactive-text">PROOF</h2>
-            <input type="text" id="proof" placeholder="TWEET URL">
+            <input type="text" id="proof" placeholder="TWEET URL" oninput="saveData()">
             <a href="#" class="nav-link" onclick="to(5)">VERIFY</a>
         </div>
 
         <div class="step" id="p5">
             <h2 class="interactive-text">WALLET</h2>
-            <input type="text" id="evm" placeholder="0x...">
+            <input type="text" id="evm" placeholder="0x..." oninput="saveData()">
             <a href="#" class="nav-link" id="finalSubmit" onclick="event.preventDefault(); send()">SUBMIT</a>
         </div>
 
@@ -147,12 +68,114 @@
             <h1 class="interactive-text" style="color:var(--red)">DONE</h1>
             <p>YOU'RE IN THE SKY.</p>
         </div>
+
+        <div class="step" id="p_blocked">
+            <h1 class="interactive-text" style="color:var(--red)">SORRY</h1>
+            <p>ONE ENTRY PER DEVICE ONLY.</p>
+        </div>
     </div>
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec';
 
-        // تأثير الرياح
+        // 1. الحسم: التحقق من التسجيل المسبق فور فتح الصفحة
+        function checkStatus() {
+            if (localStorage.getItem('gloomor_done') === 'true') {
+                to('_blocked');
+                return true;
+            }
+            return false;
+        }
+
+        // 2. حفظ التقدم لحظياً
+        function saveData() {
+            const data = {
+                user: document.getElementById('user').value,
+                proof: document.getElementById('proof').value,
+                evm: document.getElementById('evm').value,
+                task1: task1,
+                task2: task2
+            };
+            localStorage.setItem('gloomor_progress', JSON.stringify(data));
+        }
+
+        // 3. استرجاع التقدم
+        function restoreProgress() {
+            if (checkStatus()) return;
+
+            const saved = localStorage.getItem('gloomor_progress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('user').value = data.user || '';
+                document.getElementById('proof').value = data.proof || '';
+                document.getElementById('evm').value = data.evm || '';
+                if (data.task1) ok('lk1');
+                if (data.task2) ok('lk2');
+                
+                const lastStep = localStorage.getItem('gloomor_step');
+                if (lastStep && lastStep !== '6') to(lastStep);
+            }
+        }
+
+        function to(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById('p' + step);
+            if (target) {
+                target.classList.add('active');
+                if (step !== '_blocked') localStorage.setItem('gloomor_step', step);
+                splitText();
+            }
+        }
+
+        let task1 = false, task2 = false;
+        function ok(id) {
+            const el = document.getElementById(id);
+            el.classList.add('done');
+            el.innerText = "DONE ✓";
+            if(id === 'lk1') task1 = true;
+            if(id === 'lk2') task2 = true;
+            saveData();
+            if(task1 && task2) {
+                const nextBtn = document.getElementById('btnNext1');
+                nextBtn.style.opacity = "1";
+                nextBtn.style.pointerEvents = "auto";
+            }
+        }
+
+        function send() {
+            const name = document.getElementById('user').value;
+            const proof = document.getElementById('proof').value;
+            const wallet = document.getElementById('evm').value;
+            const btn = document.getElementById('finalSubmit');
+
+            if(!name || !proof || !wallet) { alert("Complete all steps first!"); return; }
+            if(!/^0x[a-fA-F0-9]{40}$/.test(wallet)) { alert("Invalid EVM Address!"); return; }
+
+            btn.innerText = "LOCKING DATA...";
+            btn.style.pointerEvents = "none";
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, proof, wallet })
+            })
+            .then(() => {
+                // الحسم النهائي: تعليم الجهاز كـ "تم التسجيل"
+                localStorage.setItem('gloomor_done', 'true');
+                localStorage.removeItem('gloomor_progress');
+                localStorage.removeItem('gloomor_step');
+                to(6);
+            })
+            .catch(() => {
+                alert("Connection Error!");
+                btn.innerText = "SUBMIT";
+                btn.style.pointerEvents = "auto";
+            });
+        }
+
+        // الأجواء والأنيميشن
         function createWind() {
             const sky = document.getElementById('sky');
             for(let i=0; i<15; i++){
@@ -166,7 +189,6 @@
             }
         }
 
-        // تفكيك الحروف
         function splitText() {
             document.querySelectorAll('.interactive-text').forEach(el => {
                 if (el.dataset.split === "true") return;
@@ -176,73 +198,9 @@
             });
         }
 
-        // الانتقال بين الصفحات
-        function to(step) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('p' + step).classList.add('active');
-            splitText();
-        }
-
-        // التحقق من المهام الاجتماعية
-        let task1 = false, task2 = false;
-        function ok(id, nextId) {
-            const el = document.getElementById(id);
-            el.classList.add('done');
-            el.innerText = "DONE ✓";
-            if(id === 'lk1') task1 = true;
-            if(id === 'lk2') task2 = true;
-            if(task1 && task2) {
-                const nextBtn = document.getElementById(nextId);
-                nextBtn.style.opacity = "1";
-                nextBtn.style.pointerEvents = "auto";
-            }
-        }
-
-        // إرسال البيانات لجوجل شيت
-        function send() {
-            const name = document.getElementById('user').value;
-            const proof = document.getElementById('proof').value;
-            const wallet = document.getElementById('evm').value;
-            const btn = document.getElementById('finalSubmit');
-
-            if(!name || !proof) {
-                alert("Please fill all fields!");
-                return;
-            }
-
-            if(!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
-                alert("Invalid EVM Address!");
-                return;
-            }
-
-            // تعطيل الزر أثناء الإرسال
-            btn.innerText = "SENDING...";
-            btn.style.pointerEvents = "none";
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, proof, wallet })
-            })
-            .then(() => to(6))
-            .catch(err => {
-                console.error(err);
-                alert("Error! Try again.");
-                btn.innerText = "SUBMIT";
-                btn.style.pointerEvents = "auto";
-            });
-        }
-
-        // تفاعل اللوجو
-        document.getElementById('logo').onclick = function() {
-            this.style.filter = 'drop-shadow(0 0 30px red) invert(1)';
-            setTimeout(()=> this.style.filter='none', 400);
-        };
-
         window.onload = () => {
             createWind();
+            restoreProgress();
             splitText();
         };
     </script>
