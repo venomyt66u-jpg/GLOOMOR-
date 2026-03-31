@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOOMOR - Creative</title>
+    <title>GLOOMOR </title>
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Gochi+Hand&family=Inter:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,6 +12,13 @@
             --white: #FFFFFF; 
             --red: #FF0000; 
             --dark: #0F172A;
+        }
+
+        /* --- إخفاء المربعات الزرقاء والتحديد عند الضغط --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            outline: none !important;
+            user-select: none;
         }
 
         body, html { 
@@ -26,14 +33,12 @@
         .wind-streak { position: absolute; background: rgba(255,255,255,0.4); height: 3px; border-radius: 10px; animation: blow 4s linear infinite; }
         @keyframes blow { from { transform: translateX(-200px); opacity: 0; } 50% { opacity: 0.8; } to { transform: translateX(100vw); opacity: 0; } }
 
-        /* --- المربع الأزرق السماوي الاحترافي --- */
         .glass-box { 
             position: relative; z-index: 10; 
             width: 85%; max-width: 500px; 
             background: var(--glass-blue);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            /* حدود بيضاء كأنها ظل ضوئي */
             border: 3px solid rgba(255, 255, 255, 0.8);
             border-radius: 50px; 
             padding: 40px; 
@@ -42,10 +47,9 @@
             margin: 20px;
         }
         
-        /* --- الخط الكرييتف اليدوي --- */
         .interactive-text { 
             font-family: 'Permanent Marker', cursive;
-            font-size: clamp(2.5rem, 8vw, 3.5rem); /* حجم مرن للموبايل والـ PC */
+            font-size: clamp(2.5rem, 8vw, 3.5rem); 
             color: var(--dark);
             margin-bottom: 20px;
             line-height: 1.2;
@@ -71,9 +75,10 @@
             width: 100%; padding: 18px; border-radius: 25px; border: 3px solid var(--dark);
             background: var(--white); margin-bottom: 20px; box-sizing: border-box;
             font-family: 'Gochi Hand', cursive; font-size: 1.5rem; font-weight: bold;
-            text-align: center; outline: none; transition: 0.3s;
+            text-align: center; transition: 0.3s;
+            user-select: text; /* السماح بالكتابة فقط */
         }
-        input:focus { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        input:focus { transform: scale(1.02); }
 
         .nav-link { 
             display: block; background: var(--dark); color: var(--white); 
@@ -89,14 +94,11 @@
         .nav-link.done { background: #00C853; pointer-events: none; border: none; }
 
         .share-btn { background: #1DA1F2; color: white; margin-top: 20px; }
-        .share-btn:hover { background: #0c85d0; }
 
-        /* التنسيق للموبايل */
         @media (max-width: 480px) {
             .glass-box { padding: 30px 20px; border-radius: 35px; }
             .interactive-text { font-size: 2.2rem; }
         }
-
     </style>
 </head>
 <body>
@@ -112,7 +114,7 @@
 
         <div class="step" id="p2">
             <h2 class="interactive-text">Who R U?</h2>
-            <input type="text" id="user" placeholder="Enter X Username" oninput="saveData()">
+            <input type="text" id="user" placeholder="Enter X Username">
             <a class="nav-link" onclick="to(3)">GO NEXT -></a>
         </div>
 
@@ -125,13 +127,13 @@
 
         <div class="step" id="p4">
             <h2 class="interactive-text">PROOF</h2>
-            <input type="text" id="proof" placeholder="Paste Comment Link" oninput="saveData()">
+            <input type="text" id="proof" placeholder="Paste Comment Link">
             <a class="nav-link" onclick="validateLink()">CHECK IT</a>
         </div>
 
         <div class="step" id="p5">
             <h2 class="interactive-text">WALLET</h2>
-            <input type="text" id="evm" placeholder="0x... EVM Address" oninput="saveData()">
+            <input type="text" id="evm" placeholder="0x... EVM Address">
             <a class="nav-link" id="finalSubmit" onclick="send()">SUBMIT NOW</a>
         </div>
 
@@ -144,6 +146,13 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec';
+
+        // --- وظيفة منع التسجيل المتكرر ---
+        function checkSubmission() {
+            if (localStorage.getItem('gloomor_user_submitted')) {
+                to(6); // إذا سجل مسبقاً، اذهب لصفحة النهاية فوراً
+            }
+        }
 
         function to(step) {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -177,6 +186,11 @@
         }
 
         function send() {
+            if (localStorage.getItem('gloomor_user_submitted')) {
+                alert("You have already submitted!");
+                return;
+            }
+
             const name = document.getElementById('user').value;
             const proof = document.getElementById('proof').value;
             const wallet = document.getElementById('evm').value;
@@ -190,7 +204,11 @@
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({ name, proof, wallet })
-            }).then(() => to(6)).catch(() => {
+            }).then(() => {
+                // حفظ الحالة في المتصفح لمنع التسجيل مرة أخرى
+                localStorage.setItem('gloomor_user_submitted', 'true');
+                to(6);
+            }).catch(() => {
                 alert("Error! Try again.");
                 btn.innerText = "SUBMIT NOW";
                 btn.style.pointerEvents = "auto";
@@ -218,7 +236,11 @@
             });
         }
 
-        window.onload = () => { createWind(); splitText(); };
+        window.onload = () => { 
+            checkSubmission(); // فحص المتصفح عند الفتح
+            createWind(); 
+            splitText(); 
+        };
     </script>
 </body>
 </html>
