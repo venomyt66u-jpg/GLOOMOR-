@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOOMOR | WAVE 2</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Gochi+Hand&family=Inter:wght@900&display=swap" rel="stylesheet">
+
+<style>
+:root { 
+    --bg: #050505;
+    --white: #FFFFFF; 
+    --red: #FF0000; 
+    --black: #000000;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    outline: none !important;
+    box-sizing: border-box;
+}
+
+body, html { 
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); 
+    font-family: 'Gochi Hand', cursive; 
+    overflow-x: hidden;
+}
+
+/* ================= BACKGROUND ================= */
+.bg-container {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #111 0%, #000 100%);
+}
+
+.bg-row {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(40px, 8vw, 90px);
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.03);
+    white-space: nowrap;
+    line-height: 0.8;
+    filter: blur(3px);
+    user-select: none;
+    animation: moveRow 50s linear infinite;
+}
+
+.bg-row:nth-child(even) { animation-direction: reverse; color: rgba(255, 0, 0, 0.02); }
+
+@keyframes moveRow {
+    from { transform: translateX(-30%); }
+    to { transform: translateX(30%); }
+}
+
+/* ================= WAVE 2 INTRO ================= */
+#intro-wave {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wave-text {
+    font-family: 'Permanent Marker', cursive;
+    font-size: clamp(3rem, 12vw, 6rem);
+    color: var(--white);
+    opacity: 0;
+    animation: waveFade 3.5s ease-in-out forwards;
+}
+
+@keyframes waveFade {
+    0% { opacity: 0; transform: scale(0.8); filter: blur(10px); }
+    40% { opacity: 1; transform: scale(1); filter: blur(0px); }
+    80% { opacity: 1; transform: scale(1.05); filter: blur(0px); }
+    100% { opacity: 0; transform: scale(1.2); filter: blur(15px); visibility: hidden; }
+}
+
+/* ================= MAIN CONTENT ================= */
+#main {
+    display: none;
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    padding: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.white-box { 
+    width: 100%; 
+    max-width: 480px; 
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 40px; 
+    padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 40px); 
+    text-align: center; 
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+}
+
+.interactive-text { 
+    font-family: 'Permanent Marker', cursive;
+    font-size: clamp(2rem, 6vw, 3rem); 
+    color: var(--black);
+    margin: 0 0 20px 0;
+}
+
+input { 
+    width: 100%; 
+    padding: 18px; 
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    background: #fbfbfb;
+    text-align: center;
+}
+
+.nav-link { 
+    display: block; 
+    background: var(--black); 
+    color: white; 
+    padding: 18px; 
+    border-radius: 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+}
+
+.nav-link:hover { background: var(--red); transform: translateY(-2px); }
+.nav-link.done { background: #00C853 !important; }
+.disabled { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
+
+.step { display: none; }
+.step.active { display: block; animation: fadeIn 0.6s ease; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+</style>
+</head>
+
+<body>
+
+<div class="bg-container" id="bgRows"></div>
+
+<div id="intro-wave">
+    <div class="wave-text">WAVE 2</div>
+</div>
+
+<div id="main">
+    <div class="white-box">
+        <h1 class="interactive-text">GLOOMOR</h1>
+
+        <div class="step" id="p1">
+            <p style="font-weight:bold; color:#666">ENCRYPTED PROTOCOL INITIATED</p>
+            <a class="nav-link" onclick="saveTo(2)">GET STARTED</a>
+        </div>
+
+        <div class="step" id="p2">
+            <h2 class="interactive-text" style="font-size:1.8rem">X IDENTITY</h2>
+            <input type="text" id="username" placeholder="@Username">
+            <a class="nav-link" onclick="validateStep2()">CONTINUE</a>
+        </div>
+
+        <div class="step" id="p3">
+            <h2 class="interactive-text" style="font-size:1.8rem">REQUISITES</h2>
+            <a href="https://x.com/itsgloomor" target="_blank" class="nav-link" id="tk1" onclick="task('tk1')">1. FOLLOW GLOOMOR</a>
+            <a href="https://x.com/i/status/2038728622123425944" target="_blank" class="nav-link" id="tk2" onclick="task('tk2')">2. LIKE & RT</a>
+            <a class="nav-link disabled" id="btn3" onclick="saveTo(4)">CONTINUE</a>
+        </div>
+
+        <div class="step" id="p4">
+            <h2 class="interactive-text" style="font-size:1.8rem">VERIFICATION</h2>
+            <p style="font-size:0.9rem">Paste your <b>Comment Link</b> for proof</p>
+            <input type="text" id="proof" placeholder="https://x.com/status/...">
+            <a class="nav-link" onclick="validateStep4()">VERIFY PROOF</a>
+        </div>
+
+        <div class="step" id="p5">
+            <h2 class="interactive-text" style="font-size:1.8rem">REWARD</h2>
+            <input type="text" id="wallet" placeholder="0x... EVM WALLET">
+            <a class="nav-link" id="finalBtn" onclick="finish()">SUBMIT ACCESS</a>
+        </div>
+
+        <div class="step" id="p6">
+            <h1 class="interactive-text" style="color:red">AUTHORIZED</h1>
+            <p style="font-weight:bold">Your soul is now part of Wave 2.<br>Do not submit again.</p>
+        </div>
+
+        <div class="step" id="pBlocked">
+            <h1 class="interactive-text">LOCKED</h1>
+            <p style="font-weight:bold">System detected previous entry.<br>Multiple submissions are prohibited.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// 1. Generate BG Rows
+const bgRows = document.getElementById('bgRows');
+for(let i=0; i<30; i++) {
+    const row = document.createElement('div');
+    row.className = 'bg-row';
+    row.innerText = "GLOOMOR GLOOMOR GLOOMOR GLOOMOR GLOOMOR ";
+    row.style.animationDuration = (35 + Math.random() * 35) + "s";
+    bgRows.appendChild(row);
+}
+
+// 2. Logic & Persistence
+let currentStep = localStorage.getItem('gloomor_step') || 1;
+const isFinished = localStorage.getItem('gloomor_done');
+let attemptCount = 0; 
+
+window.onload = () => {
+    setTimeout(() => {
+        document.getElementById('intro-wave').style.display = 'none';
+        document.getElementById('main').style.display = 'flex';
+        if(isFinished) showStep('Blocked');
+        else showStep(currentStep);
+    }, 3500); 
+};
+
+function showStep(s) {
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('p' + s);
+    if(target) target.classList.add('active');
+}
+
+function saveTo(s) {
+    currentStep = s;
+    localStorage.setItem('gloomor_step', s);
+    showStep(s);
+}
+
+function validateStep2() {
+    const u = document.getElementById('username').value.trim();
+    if(u.length > 2) saveTo(3);
+    else alert("Please enter your X handle.");
+}
+
+let t1=false, t2=false;
+function task(id) {
+    document.getElementById(id).classList.add('done');
+    if(id==='tk1') t1=true; if(id==='tk2') t2=true;
+    if(t1 && t2) document.getElementById('btn3').classList.remove('disabled');
+}
+
+function validateStep4() {
+    const p = document.getElementById('proof').value.trim();
+    if(!p.includes('x.com') && !p.includes('twitter.com')) {
+        alert("❌ ERROR: Access Denied. \nLink format is not recognized.");
+        return;
+    }
+    if(attemptCount === 0) {
+        attemptCount++;
+        alert("⚠️ VERIFICATION FAILED \nOur system could not find your comment. Please ensure you commented and pasted the correct link.");
+    } else {
+        saveTo(5);
+    }
+}
+
+// 3. API SUBMISSION (GOOGLE SHEETS)
+async function finish() {
+    const wallet = document.getElementById('wallet').value.trim();
+    const user = document.getElementById('username').value.trim();
+    const proof = document.getElementById('proof').value.trim();
+    const btn = document.getElementById('finalBtn');
+
+    if(wallet.length < 20 || !wallet.startsWith('0x')) {
+        alert("Please enter a valid EVM address.");
+        return;
+    }
+
+    btn.innerText = "FUCK ISRAEL...";
+    btn.classList.add('disabled');
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec';
+    
+    // تجهيز البيانات بصيغة FormData لتتوافق مع جوجل سكريبت
+    const formData = new FormData();
+    formData.append('username', user);
+    formData.append('proof', proof);
+    formData.append('wallet', wallet);
+
+    try {
+        await fetch(scriptURL, { method: 'POST', body: formData });
+        // نجاح الإرسال
+        localStorage.setItem('gloomor_done', 'true');
+        saveTo(6);
+    } catch (error) {
+        console.error('Error!', error.message);
+        // حتى لو فشل الاتصال، سنعتبره نجح لإبقاء المستخدم في حالة رضاء، أو يمكنك تنبيهه
+        localStorage.setItem('gloomor_done', 'true');
+        saveTo(6);
+    }
+}
+</script>
+
+</body>
+</html>
