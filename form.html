@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOOMOR | WAVE 2</title>
+    <title>GLOOMOR | WAVE 2 RESET</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Gochi+Hand&family=Inter:wght@900&display=swap" rel="stylesheet">
 
@@ -13,7 +13,6 @@
             --white: #FFFFFF; 
             --red: #FF0000; 
             --black: #000000;
-            --gray: #1a1a1a;
         }
 
         * {
@@ -30,15 +29,10 @@
             color: var(--white);
         }
 
-        /* ================= BACKGROUND ANIMATION ================= */
+        /* ================= BACKGROUND ================= */
         .bg-container {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: fixed; inset: 0; z-index: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: radial-gradient(circle, #111 0%, #000 100%);
         }
 
@@ -61,91 +55,35 @@
             to { transform: translateX(30%); }
         }
 
-        /* ================= INTRO LOADER ================= */
-        #intro-wave {
-            position: fixed;
-            inset: 0;
-            background: black;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .wave-text {
-            font-family: 'Permanent Marker', cursive;
-            font-size: clamp(3rem, 12vw, 6rem);
-            color: var(--white);
-            opacity: 0;
-            animation: waveFade 3.5s ease-in-out forwards;
-        }
-
-        @keyframes waveFade {
-            0% { opacity: 0; transform: scale(0.8); filter: blur(10px); }
-            40% { opacity: 1; transform: scale(1); filter: blur(0px); }
-            80% { opacity: 1; transform: scale(1.05); filter: blur(0px); }
-            100% { opacity: 0; transform: scale(1.2); filter: blur(15px); visibility: hidden; }
-        }
-
-        /* ================= MAIN INTERFACE ================= */
+        /* ================= MODAL & UI ================= */
         #main {
-            display: none;
-            position: relative;
-            z-index: 10;
-            min-height: 100vh;
-            padding: 20px;
-            align-items: center;
-            justify-content: center;
+            display: none; position: relative; z-index: 10;
+            min-height: 100vh; padding: 20px; align-items: center; justify-content: center;
         }
 
         .white-box { 
-            width: 100%; 
-            max-width: 480px; 
+            width: 100%; max-width: 480px; 
             background: rgba(255, 255, 255, 0.98);
-            border-radius: 40px; 
-            padding: clamp(30px, 5vw, 60px) clamp(20px, 4vw, 40px); 
-            text-align: center; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            border-radius: 40px; padding: 40px 30px; 
+            text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.8);
             color: var(--black);
         }
 
         .interactive-text { 
             font-family: 'Permanent Marker', cursive;
-            font-size: clamp(2rem, 6vw, 3rem); 
-            color: var(--black);
-            margin: 0 0 20px 0;
+            font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 20px;
         }
 
         input { 
-            width: 100%; 
-            padding: 18px; 
-            border: 2px solid #eee;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            background: #fbfbfb;
-            text-align: center;
-            transition: 0.3s;
+            width: 100%; padding: 18px; border: 2px solid #eee; border-radius: 20px;
+            margin-bottom: 15px; font-family: 'Inter', sans-serif; text-align: center;
         }
 
-        input:focus { border-color: var(--red); }
-
         .nav-link { 
-            display: block; 
-            background: var(--black); 
-            color: white; 
-            padding: 18px; 
-            border-radius: 20px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            transition: 0.3s;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            border: none;
-            width: 100%;
+            display: block; background: var(--black); color: white; 
+            padding: 18px; border-radius: 20px; margin-bottom: 10px;
+            cursor: pointer; font-weight: bold; text-decoration: none;
+            transition: 0.3s; font-family: 'Inter', sans-serif; border: none; width: 100%;
         }
 
         .nav-link:hover { background: var(--red); transform: translateY(-2px); }
@@ -155,82 +93,33 @@
         .step { display: none; }
         .step.active { display: block; animation: fadeIn 0.6s ease; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* ================= CUSTOM ALERT MODAL ================= */
         #custom-alert {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            backdrop-filter: blur(8px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center;
+            z-index: 9999; backdrop-filter: blur(8px);
         }
 
         .alert-content {
-            background: #111;
-            border: 2px solid var(--red);
-            padding: 35px;
-            border-radius: 30px;
-            max-width: 400px;
-            width: 85%;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.2);
-            transform: translateY(20px);
-            transition: 0.3s;
-            opacity: 0;
+            background: #111; border: 2px solid var(--red); padding: 35px;
+            border-radius: 30px; max-width: 400px; width: 85%; text-align: center;
+            transform: translateY(20px); transition: 0.3s; opacity: 0;
         }
 
         .alert-content.show { transform: translateY(0); opacity: 1; }
 
-        .alert-content h3 {
-            color: var(--red);
-            font-family: 'Permanent Marker', cursive;
-            margin: 0 0 15px 0;
-            font-size: 1.8rem;
-        }
-
-        .alert-content p {
-            color: #ccc;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 25px;
-        }
-
-        .alert-btn {
-            background: var(--red);
-            color: #fff;
-            border: none;
-            padding: 12px 35px;
-            border-radius: 15px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
-        }
-
-        .alert-btn:hover { transform: scale(1.05); background: #cc0000; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     </style>
 </head>
-
 <body>
 
     <div class="bg-container" id="bgRows"></div>
 
-    <div id="intro-wave">
-        <div class="wave-text">WAVE 2</div>
-    </div>
-
     <div id="custom-alert">
         <div class="alert-content" id="alert-box">
-            <h3 id="alert-title">SYSTEM ERROR</h3>
-            <p id="alert-msg">Connection lost or invalid protocol.</p>
-            <button class="alert-btn" onclick="closeAlert()">ACKNOWLEDGE</button>
+            <h3 id="alert-title" style="color:red; font-family:'Permanent Marker'">ERROR</h3>
+            <p id="alert-msg" style="color:white; font-family:'Inter'">Message here.</p>
+            <button class="nav-link" onclick="closeAlert()" style="background:red">ACKNOWLEDGE</button>
         </div>
     </div>
 
@@ -239,7 +128,7 @@
             <h1 class="interactive-text">GLOOMOR</h1>
 
             <div class="step" id="p1">
-                <p style="font-weight:bold; color:#666">ENCRYPTED PROTOCOL INITIATED</p>
+                <p style="font-weight:bold; color:#666">WAVE 2 INITIATED</p>
                 <button class="nav-link" onclick="saveTo(2)">GET STARTED</button>
             </div>
 
@@ -252,13 +141,14 @@
             <div class="step" id="p3">
                 <h2 class="interactive-text" style="font-size:1.8rem">REQUISITES</h2>
                 <a href="https://x.com/itsgloomor" target="_blank" class="nav-link" id="tk1" onclick="task('tk1')">1. FOLLOW GLOOMOR</a>
-                <a href="https://x.com/i/status/2039747695254872110" target="_blank" class="nav-link" id="tk2" onclick="task('tk2')">2. LIKE & RT</a>
+                <a href="https://x.com/i/status/2039747695254872110" target="_blank" class="nav-link" id="tk2" onclick="task('tk2')">2. LIKE & RT POST</a>
+                <a href="https://x.com/i/status/2039747695254872110" target="_blank" class="nav-link" id="tk3" onclick="task('tk3')">3. COMMENT WALLET</a>
                 <button class="nav-link disabled" id="btn3" onclick="saveTo(4)">CONTINUE</button>
             </div>
 
             <div class="step" id="p4">
                 <h2 class="interactive-text" style="font-size:1.8rem">VERIFICATION</h2>
-                <p style="font-size:0.9rem">Paste your <b>Comment Link</b> for proof</p>
+                <p style="font-size:0.9rem">Paste your <b>Comment Link</b></p>
                 <input type="text" id="proof" placeholder="https://x.com/status/...">
                 <button class="nav-link" onclick="validateStep4()">VERIFY PROOF</button>
             </div>
@@ -271,18 +161,26 @@
 
             <div class="step" id="p6">
                 <h1 class="interactive-text" style="color:red">AUTHORIZED</h1>
-                <p style="font-weight:bold">Your soul is now part of Wave 2.<br>Do not submit again.</p>
+                <p style="font-weight:bold">Wave 2 registration complete.<br>Data encrypted.</p>
             </div>
 
             <div class="step" id="pBlocked">
                 <h1 class="interactive-text">LOCKED</h1>
-                <p style="font-weight:bold">System detected previous entry.<br>Multiple submissions are prohibited.</p>
+                <p style="font-weight:bold">Previous entry detected.<br>Wait for next Wave.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. Generate Background Rows
+        // --- 1. RESET LOGIC (For Wave 2) ---
+        // بنعمل فحص لو دي أول مرة يفتح الـ Wave 2 بنصفر الـ LocalStorage القديم
+        if (!localStorage.getItem('gloomor_wave2_reset')) {
+            localStorage.removeItem('gloomor_done');
+            localStorage.removeItem('gloomor_step');
+            localStorage.setItem('gloomor_wave2_reset', 'true');
+        }
+
+        // --- 2. Background ---
         const bgRows = document.getElementById('bgRows');
         for(let i=0; i<30; i++) {
             const row = document.createElement('div');
@@ -292,13 +190,12 @@
             bgRows.appendChild(row);
         }
 
-        // 2. Alert Logic
+        // --- 3. Alert Logic ---
         function showAlert(title, message) {
             const modal = document.getElementById('custom-alert');
             const box = document.getElementById('alert-box');
             document.getElementById('alert-title').innerText = title;
             document.getElementById('alert-msg').innerText = message;
-            
             modal.style.display = 'flex';
             setTimeout(() => box.classList.add('show'), 10);
         }
@@ -310,18 +207,15 @@
             setTimeout(() => modal.style.display = 'none', 300);
         }
 
-        // 3. Main Navigation & Logic
+        // --- 4. App Logic ---
         let currentStep = localStorage.getItem('gloomor_step') || 1;
         const isFinished = localStorage.getItem('gloomor_done');
         let attemptCount = 0; 
 
         window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('intro-wave').style.display = 'none';
-                document.getElementById('main').style.display = 'flex';
-                if(isFinished) showStep('Blocked');
-                else showStep(currentStep);
-            }, 3500); 
+            document.getElementById('main').style.display = 'flex';
+            if(isFinished) showStep('Blocked');
+            else showStep(currentStep);
         };
 
         function showStep(s) {
@@ -339,48 +233,48 @@
         function validateStep2() {
             const u = document.getElementById('username').value.trim();
             if(u.length > 2) saveTo(3);
-            else showAlert("IDENTITY ERROR", "Access denied. Please provide a valid X handle to initiate the protocol.");
+            else showAlert("IDENTITY ERROR", "Please enter your X handle.");
         }
 
-        let t1=false, t2=false;
+        let tasks = { tk1: false, tk2: false, tk3: false };
         function task(id) {
             document.getElementById(id).classList.add('done');
             document.getElementById(id).innerText = "✓ COMPLETED";
-            if(id==='tk1') t1=true; if(id==='tk2') t2=true;
-            if(t1 && t2) document.getElementById('btn3').classList.remove('disabled');
+            tasks[id] = true;
+            if(tasks.tk1 && tasks.tk2 && tasks.tk3) {
+                document.getElementById('btn3').classList.remove('disabled');
+            }
         }
 
         function validateStep4() {
             const p = document.getElementById('proof').value.trim();
             if(!p.includes('x.com') && !p.includes('twitter.com')) {
-                showAlert("LINK INVALID", "The provided link is not recognized. Please submit a valid X status link for verification.");
+                showAlert("INVALID LINK", "Please provide a valid link from X.");
                 return;
             }
             if(attemptCount === 0) {
                 attemptCount++;
-                showAlert("SYSTEM DELAY", "Security check failed. Our neural network couldn't detect your interaction. Try submitting again.");
+                showAlert("SECURITY CHECK", "Please ensure you commented your wallet address on the post first.");
             } else {
                 saveTo(5);
             }
         }
 
-        // 4. API Submission
         async function finish() {
             const wallet = document.getElementById('wallet').value.trim();
             const user = document.getElementById('username').value.trim();
             const proof = document.getElementById('proof').value.trim();
             const btn = document.getElementById('finalBtn');
 
-            if(wallet.length < 20 || !wallet.startsWith('0x')) {
-                showAlert("WALLET ERROR", "Invalid EVM address. Please check your credentials and try again.");
+            if(!wallet.startsWith('0x') || wallet.length < 20) {
+                showAlert("WALLET ERROR", "Invalid EVM wallet address.");
                 return;
             }
 
-            btn.innerText = "UPLOADING SOUL...";
+            btn.innerText = "FUCK ISRAEL...";
             btn.classList.add('disabled');
 
             const scriptURL = 'https://script.google.com/macros/s/AKfycbympitbLtWNoWX1SsksIAiRARv0jo7pVZmBdC20_wWVIkucuvjW80AxlPktxzWdD4U0KQ/exec';
-            
             const formData = new FormData();
             formData.append('username', user);
             formData.append('proof', proof);
@@ -390,9 +284,7 @@
                 await fetch(scriptURL, { method: 'POST', body: formData });
                 localStorage.setItem('gloomor_done', 'true');
                 saveTo(6);
-            } catch (error) {
-                console.error('Error!', error.message);
-                // Fail-safe success
+            } catch (e) {
                 localStorage.setItem('gloomor_done', 'true');
                 saveTo(6);
             }
