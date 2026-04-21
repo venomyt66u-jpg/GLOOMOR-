@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOOMOR</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root{
+    --primary:#ffffff;
+    --yellow:#d4ff47;
+    --beige:#c9a882;
+    --beige-light:#e5d4bc;
+    --cream:#f2f1ea;
+    --ink:#0a0a0a;
+    --bg-black:#000000;
+    --shadow-offset:8px;
+    --transition-speed:0.8s;
+}
+
+*{
+    margin:0;padding:0;box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+    user-select:none;
+    outline:none!important;
+}
+
+html{
+    scroll-behavior:smooth;
+    overflow-x:hidden;
+    width:100%;
+}
+
+body{
+    background-color:var(--bg-black);
+    font-family:'Inter',sans-serif;
+    color:var(--primary);
+    overflow-x:hidden;
+    width:100%;
+    max-width:100vw;
+    transition:background-color var(--transition-speed);
+}
+
+body.intro-active{overflow:hidden;height:100vh;}
+
+/* ============ ULTRA-CINEMATIC INTRO ============ */
+.intro{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    perspective:2000px;
+}
+
+/* CRT scan lines */
+.intro::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,0.025) 0px,
+        rgba(255,255,255,0.025) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events:none;
+    z-index:20;
+}
+
+/* Film grain noise */
+.intro::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity:0.05;
+    pointer-events:none;
+    z-index:21;
+    mix-blend-mode:overlay;
+}
+
+/* Heartbeat pulse origin (ACT 1) */
+.heartbeat{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--yellow);
+    box-shadow:0 0 80px var(--yellow),0 0 160px var(--yellow);
+    opacity:0;
+    z-index:5;
+}
+.shockwave{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid var(--yellow);
+    border-radius:50%;
+    width:20px;
+    height:20px;
+    opacity:0;
+    z-index:4;
+}
+
+/* Matrix rain (ACT 2) */
+.matrix-rain{
+    position:absolute;
+    inset:0;
+    z-index:3;
+    pointer-events:none;
+    overflow:hidden;
+}
+.rain-col{
+    position:absolute;
+    top:-100vh;
+    font-family:'JetBrains Mono',monospace;
+    font-size:16px;
+    color:var(--yellow);
+    line-height:1.2;
+    white-space:nowrap;
+    text-shadow:0 0 8px var(--yellow);
+    opacity:0;
+    writing-mode:vertical-rl;
+    text-orientation:upright;
+}
+
+/* 3D Grid (ACT 3) */
+.grid-floor{
+    position:absolute;
+    width:200vw;
+    height:100vh;
+    top:55%;
+    left:-50vw;
+    background-image:
+        linear-gradient(rgba(212,255,71,0.3) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(212,255,71,0.3) 1px,transparent 1px);
+    background-size:80px 80px;
+    transform:rotateX(75deg);
+    transform-origin:center top;
+    opacity:0;
+    z-index:2;
+    mask-image:linear-gradient(to bottom,#000 0%,#000 60%,transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 60%,transparent 100%);
+}
+.grid-ceiling{
+    position:absolute;
+    width:200vw;
+    height:100vh;
+    bottom:55%;
+    left:-50vw;
+    background-image:
+        linear-gradient(rgba(212,255,71,0.2) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(212,255,71,0.2) 1px,transparent 1px);
+    background-size:80px 80px;
+    transform:rotateX(-75deg);
+    transform-origin:center bottom;
+    opacity:0;
+    z-index:2;
+    mask-image:linear-gradient(to top,#000 0%,#000 60%,transparent 100%);
+    -webkit-mask-image:linear-gradient(to top,#000 0%,#000 60%,transparent 100%);
+}
+
+/* Warp speed streaks (ACT 4) */
+.warp{
+    position:absolute;
+    inset:0;
+    z-index:6;
+    pointer-events:none;
+    perspective:400px;
+}
+.warp-line{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:2px;
+    height:2px;
+    background:var(--yellow);
+    box-shadow:0 0 6px var(--yellow);
+    opacity:0;
+    border-radius:50%;
+    transform-origin:center center;
+}
+
+/* Big title marquee flash */
+.marquee{
+    position:absolute;
+    top:50%;
+    left:0;
+    width:200%;
+    transform:translateY(-50%);
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(5rem,20vw,18rem);
+    color:var(--yellow);
+    white-space:nowrap;
+    letter-spacing:-5px;
+    z-index:7;
+    opacity:0;
+    text-transform:uppercase;
+    pointer-events:none;
+    mix-blend-mode:screen;
+}
+
+/* Typewriter terminal boot text */
+.boot-text{
+    position:absolute;
+    top:8%;
+    left:8%;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:var(--yellow);
+    letter-spacing:2px;
+    opacity:0;
+    z-index:15;
+    text-transform:lowercase;
+    max-width:85%;
+}
+.boot-text .line{
+    display:block;
+    margin-bottom:4px;
+    overflow:hidden;
+    white-space:nowrap;
+    width:0;
+}
+.blink-cursor{
+    display:inline-block;
+    width:8px;
+    height:12px;
+    background:var(--yellow);
+    margin-left:2px;
+    animation:blink 0.5s infinite;
+    vertical-align:middle;
+}
+@keyframes blink{
+    0%,50%{opacity:1;}
+    51%,100%{opacity:0;}
+}
+
+/* Top-right counter */
+.intro-counter{
+    position:absolute;
+    top:8%;
+    right:8%;
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    color:#fff;
+    letter-spacing:2px;
+    opacity:0;
+    z-index:15;
+    text-align:right;
+    text-transform:uppercase;
+}
+.intro-counter .percent{
+    font-family:'Archivo Black',sans-serif;
+    font-size:36px;
+    color:var(--yellow);
+    display:block;
+    line-height:1;
+    margin-top:4px;
+    letter-spacing:-2px;
+}
+
+/* Frame bottom info */
+.frame-info{
+    position:absolute;
+    bottom:8%;
+    left:8%;
+    right:8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px;
+    color:rgba(255,255,255,0.5);
+    letter-spacing:2px;
+    z-index:15;
+    text-transform:uppercase;
+    opacity:0;
+}
+.frame-info .tick{display:flex;align-items:center;gap:8px;}
+.frame-info .tick::before{
+    content:'';
+    width:6px;height:6px;
+    background:var(--yellow);
+    border-radius:50%;
+    animation:ping 1s infinite;
+}
+@keyframes ping{
+    0%,100%{opacity:1;transform:scale(1);}
+    50%{opacity:0.3;transform:scale(1.5);}
+}
+
+/* Corner brackets */
+.corner{
+    position:absolute;
+    width:40px;
+    height:40px;
+    border:3px solid var(--yellow);
+    opacity:0;
+    z-index:15;
+}
+.corner.tl{top:30px;left:30px;border-right:none;border-bottom:none;}
+.corner.tr{top:30px;right:30px;border-left:none;border-bottom:none;}
+.corner.bl{bottom:30px;left:30px;border-right:none;border-top:none;}
+.corner.br{bottom:30px;right:30px;border-left:none;border-top:none;}
+
+/* Particles that materialize letters */
+.particle{
+    position:absolute;
+    width:5px;
+    height:5px;
+    background:var(--yellow);
+    border-radius:50%;
+    pointer-events:none;
+    opacity:0;
+    z-index:8;
+    box-shadow:0 0 12px var(--yellow),0 0 24px var(--yellow);
+}
+
+/* 3D Main title container */
+.title-wrap{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:10;
+    transform-style:preserve-3d;
+}
+.intro-main{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(2.5rem,12vw,10rem);
+    text-transform:uppercase;
+    line-height:0.85;
+    text-align:center;
+    letter-spacing:-4px;
+    color:#fff;
+    opacity:0;
+    transform-style:preserve-3d;
+}
+.intro-char{
+    display:inline-block;
+    opacity:0;
+    transform:translateZ(-600px) scale(0.2);
+    transform-origin:center center;
+}
+
+/* Depth-stagger shadow layers for 3D title effect */
+.title-echo{
+    position:absolute;
+    inset:0;
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(2.5rem,12vw,10rem);
+    text-transform:uppercase;
+    line-height:0.85;
+    text-align:center;
+    letter-spacing:-4px;
+    pointer-events:none;
+}
+.title-echo.e1{color:rgba(212,255,71,0.15);transform:translateZ(-40px);}
+.title-echo.e2{color:rgba(212,255,71,0.08);transform:translateZ(-80px);}
+
+/* Expanding rings */
+.ring{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid var(--yellow);
+    border-radius:50%;
+    opacity:0;
+    pointer-events:none;
+    z-index:3;
+}
+
+/* Glitch effect layer */
+.glitch-flash{
+    position:absolute;
+    inset:0;
+    z-index:12;
+    pointer-events:none;
+    opacity:0;
+    background:linear-gradient(90deg,transparent 30%,var(--yellow) 50%,transparent 70%);
+    mix-blend-mode:difference;
+}
+
+/* Iris mask reveal */
+.iris-reveal{
+    position:absolute;
+    inset:0;
+    background:#000;
+    z-index:25;
+    clip-path:circle(0% at 50% 50%);
+    pointer-events:none;
+}
+
+/* Vignette during intro */
+.intro-vignette{
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at center,transparent 40%,rgba(0,0,0,0.8) 100%);
+    z-index:18;
+    pointer-events:none;
+    opacity:0;
+}
+
+/* ============ GLOBAL BACKGROUND WALL ============ */
+.bg-container{
+    position:fixed;
+    inset:-20%;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transform:rotate(-5deg);
+    pointer-events:none;
+    opacity:0.1;
+}
+.bg-row{
+    display:flex;
+    white-space:nowrap;
+    line-height:0.6;
+    will-change:transform;
+}
+.bg-row span{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(60px,12vw,140px);
+    color:var(--primary);
+    padding:0 10px;
+    text-transform:uppercase;
+}
+
+.vignette{
+    position:fixed;inset:0;
+    background:radial-gradient(circle,transparent 20%,black 150%);
+    z-index:5;pointer-events:none;
+}
+
+/* ============ HEADER NAV ============ */
+.header-nav{
+    position:fixed;
+    top:20px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    z-index:100;
+    padding:0 10px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.6s ease;
+}
+.header-nav.visible{
+    opacity:1;
+    pointer-events:auto;
+}
+.nav-inner{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    padding:6px;
+    border-radius:100px;
+    border:1px solid rgba(255,255,255,0.12);
+    flex-wrap:wrap;
+    justify-content:center;
+    max-width:95vw;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+.nav-item{
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:lowercase;
+    cursor:pointer;
+    transition:0.3s;
+    color:#fff;
+    text-decoration:none;
+    padding:10px 18px;
+    border-radius:100px;
+    background:none;
+    border:none;
+    font-family:'Inter',sans-serif;
+    opacity:0.7;
+}
+.nav-item:hover{
+    opacity:1;
+    background:rgba(212,255,71,0.15);
+    color:var(--yellow);
+}
+
+/* ============ SECTIONS BASE ============ */
+section{
+    position:relative;
+    min-height:100vh;
+    padding:120px 5vw 80px;
+    z-index:10;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    width:100%;
+}
+
+.section-header{
+    text-align:center;
+    margin-bottom:60px;
+    max-width:900px;
+    margin-left:auto;
+    margin-right:auto;
+    width:100%;
+}
+.section-title{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(2.2rem,9vw,7rem);
+    text-transform:uppercase;
+    line-height:0.9;
+    letter-spacing:-3px;
+    margin-bottom:15px;
+    color:#fff;
+    word-break:break-word;
+}
+.section-title .char-anim{
+    display:inline-block;
+    transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275),color 0.3s,text-shadow 0.3s;
+    cursor:pointer;
+}
+.section-title .char-anim:hover{
+    transform:translateY(-15px) scale(1.2) rotate(-5deg);
+    color:var(--yellow);
+    text-shadow:0 0 40px var(--yellow);
+}
+.section-subtitle{
+    font-size:clamp(0.8rem,1.3vw,1rem);
+    letter-spacing:2.5px;
+    opacity:0.55;
+    text-transform:lowercase;
+    font-weight:600;
+}
+
+/* ============ NEOBRUTALISM CARD ============ */
+.nb-card{
+    position:relative;
+    background:var(--cream);
+    border:3px solid #000;
+    border-radius:24px;
+    transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.25s;
+    color:#000;
+    box-shadow:var(--shadow-offset) var(--shadow-offset) 0 #000;
+}
+.nb-card:hover{
+    transform:translate(-3px,-3px);
+    box-shadow:calc(var(--shadow-offset) + 3px) calc(var(--shadow-offset) + 3px) 0 #000;
+}
+.nb-card:active{
+    transform:translate(var(--shadow-offset),var(--shadow-offset));
+    box-shadow:0 0 0 #000;
+}
+
+/* ============ HERO ============ */
+.hero{
+    height:100vh;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    perspective:1000px;
+    padding:0;
+}
+.it-is-gloomor{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(2.5rem,12vw,10rem);
+    text-transform:uppercase;
+    line-height:0.85;
+    text-align:center;
+    cursor:default;
+    letter-spacing:-4px;
+}
+.char{
+    display:inline-block;
+    transition:transform 0.3s,color 0.3s,text-shadow 0.3s;
+    cursor:pointer;
+    color:var(--primary);
+}
+.char:hover{
+    transform:scale(1.2) translateZ(50px) rotate(-3deg);
+    color:var(--yellow);
+    text-shadow:0 0 50px var(--yellow);
+}
+
+/* ============ UTILITY ============ */
+#utility{background:linear-gradient(180deg,transparent 0%,rgba(15,15,20,0.95) 20%,rgba(15,15,20,0.95) 80%,transparent 100%);}
+.utility-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:30px;
+    max-width:1400px;
+    margin:0 auto;
+    width:100%;
+}
+.utility-card{
+    padding:30px 24px 28px;
+    cursor:pointer;
+}
+.utility-card:nth-child(1){background:var(--yellow);}
+.utility-card:nth-child(2){background:var(--beige);}
+.utility-card:nth-child(3){background:var(--cream);}
+.utility-card:nth-child(4){background:var(--yellow);}
+.utility-img-wrap{
+    width:100%;
+    aspect-ratio:1/1;
+    max-width:170px;
+    margin:0 auto 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+}
+.utility-img-wrap img,.utility-img-wrap svg{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    transition:transform 0.4s ease;
+    filter:drop-shadow(4px 6px 0 rgba(0,0,0,0.18));
+}
+.utility-card:hover .utility-img-wrap img,
+.utility-card:hover .utility-img-wrap svg{transform:scale(1.08) rotate(-4deg);}
+.utility-card h3{
+    font-family:'Archivo Black',sans-serif;
+    font-size:1.15rem;
+    margin-bottom:10px;
+    text-transform:lowercase;
+    letter-spacing:-0.5px;
+    text-align:center;
+    color:#000;
+}
+.utility-card p{
+    font-size:12.5px;
+    line-height:1.55;
+    text-align:center;
+    color:#000;
+    opacity:0.8;
+    font-weight:500;
+}
+
+/* ============ ROADMAP ============ */
+#roadmap{background:linear-gradient(180deg,transparent 0%,rgba(8,8,25,0.95) 20%,rgba(8,8,25,0.95) 80%,transparent 100%);}
+.roadmap-path{
+    max-width:1100px;
+    margin:0 auto;
+    position:relative;
+    width:100%;
+}
+.roadmap-item{
+    display:flex;
+    align-items:center;
+    gap:40px;
+    margin-bottom:50px;
+    opacity:0;
+    transform:translateX(-50px);
+    transition:opacity 0.8s,transform 0.8s;
+}
+.roadmap-item.visible{opacity:1;transform:translateX(0);}
+.roadmap-item:nth-child(even){
+    flex-direction:row-reverse;
+    transform:translateX(50px);
+    text-align:right;
+}
+.roadmap-item:nth-child(even).visible{transform:translateX(0);}
+
+.roadmap-visual{
+    flex-shrink:0;
+    width:200px;
+    height:200px;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.roadmap-item:nth-child(1) .roadmap-visual{background:var(--yellow);}
+.roadmap-item:nth-child(2) .roadmap-visual{background:var(--beige);}
+.roadmap-item:nth-child(3) .roadmap-visual{background:var(--cream);}
+.roadmap-item:nth-child(4) .roadmap-visual{background:var(--yellow);}
+.roadmap-visual img,.roadmap-visual svg{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(5px 7px 0 rgba(0,0,0,0.16));
+    transition:transform 0.4s;
+}
+.roadmap-visual:hover img,
+.roadmap-visual:hover svg{transform:scale(1.08) rotate(-4deg);}
+
+.roadmap-content{
+    flex:1;
+    padding:28px 32px;
+    background:var(--beige-light);
+    min-width:0;
+}
+.roadmap-item:nth-child(even) .roadmap-content{background:var(--cream);}
+.roadmap-phase{
+    display:inline-block;
+    font-size:11px;
+    letter-spacing:3px;
+    background:#000;
+    color:var(--yellow);
+    padding:5px 12px;
+    border-radius:20px;
+    margin-bottom:14px;
+    font-weight:900;
+}
+.roadmap-title{
+    font-family:'Archivo Black',sans-serif;
+    font-size:1.5rem;
+    margin-bottom:12px;
+    text-transform:lowercase;
+    letter-spacing:-1px;
+    color:#000;
+}
+.roadmap-desc{
+    font-size:13.5px;
+    line-height:1.65;
+    color:#000;
+    opacity:0.8;
+    font-weight:500;
+}
+
+/* ============ ART ============ */
+#art{
+    background:linear-gradient(180deg,transparent 0%,rgba(5,5,20,0.98) 20%,rgba(5,5,20,0.98) 80%,transparent 100%);
+    min-height:100vh;
+}
+.art-wrap{
+    max-width:1400px;
+    margin:0 auto;
+    width:100%;
+    position:relative;
+}
+.art-main{
+    width:100%;
+    max-width:420px;
+    margin:0 auto 30px;
+    position:relative;
+    aspect-ratio:4/5;
+    border-radius:28px;
+    overflow:hidden;
+    background:#1a1a1a;
+    border:3px solid #000;
+    box-shadow:10px 10px 0 var(--yellow);
+    cursor:grab;
+}
+.art-main:active{cursor:grabbing;}
+.art-main-inner{position:relative;width:100%;height:100%;}
+.art-main-slide{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    transform:scale(1.1);
+    transition:opacity 0.6s cubic-bezier(0.22,1,0.36,1),transform 0.8s cubic-bezier(0.22,1,0.36,1);
+}
+.art-main-slide.active{opacity:1;transform:scale(1);}
+.art-main-slide img{width:100%;height:100%;object-fit:cover;display:block;}
+
+.art-badges{
+    position:absolute;
+    top:16px;left:16px;right:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    pointer-events:none;
+    z-index:2;
+}
+.art-id-badge{
+    background:var(--yellow);
+    color:#000;
+    padding:8px 14px;
+    font-family:'Archivo Black',sans-serif;
+    font-size:13px;
+    letter-spacing:2px;
+    border:2px solid #000;
+    border-radius:10px;
+    box-shadow:3px 3px 0 #000;
+}
+.art-count-badge{
+    background:#000;
+    color:#fff;
+    padding:8px 14px;
+    font-family:'Archivo Black',sans-serif;
+    font-size:13px;
+    letter-spacing:2px;
+    border:2px solid #fff;
+    border-radius:10px;
+}
+
+.art-thumbs-wrap{position:relative;width:100%;margin-top:10px;}
+.art-thumbs{
+    display:flex;
+    gap:12px;
+    padding:10px 5vw;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    justify-content:flex-start;
+}
+.art-thumbs::-webkit-scrollbar{display:none;}
+.art-thumb{
+    flex:0 0 auto;
+    width:70px;height:90px;
+    border-radius:12px;
+    overflow:hidden;
+    border:2px solid #000;
+    background:#1a1a1a;
+    cursor:pointer;
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow:3px 3px 0 rgba(0,0,0,0.5);
+    scroll-snap-align:center;
+    position:relative;
+}
+.art-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s;}
+.art-thumb:hover img{transform:scale(1.1);}
+.art-thumb.active{
+    border-color:var(--yellow);
+    transform:translateY(-6px) scale(1.1);
+    box-shadow:4px 4px 0 var(--yellow);
+    z-index:5;
+}
+.art-thumb-num{
+    position:absolute;bottom:3px;right:3px;
+    background:#000;color:#fff;
+    font-family:'Archivo Black',sans-serif;
+    font-size:8px;
+    padding:2px 5px;
+    border-radius:4px;
+    letter-spacing:1px;
+}
+
+.art-arrows{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:18px;
+    margin-top:25px;
+}
+.art-arrow{
+    width:52px;height:52px;
+    border-radius:50%;
+    background:var(--yellow);
+    color:#000;
+    border:3px solid #000;
+    box-shadow:4px 4px 0 #000;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:900;
+    transition:all 0.2s;
+    font-family:'Archivo Black',sans-serif;
+}
+.art-arrow:hover{
+    background:var(--beige-light);
+    transform:translate(-2px,-2px);
+    box-shadow:6px 6px 0 #000;
+}
+.art-arrow:active{transform:translate(4px,4px);box-shadow:0 0 0 #000;}
+.art-hint{
+    font-size:10px;
+    letter-spacing:2px;
+    color:#fff;
+    opacity:0.5;
+    text-align:center;
+    margin-top:15px;
+    text-transform:lowercase;
+}
+
+/* ============ MINT ============ */
+#mint-details{background:linear-gradient(180deg,transparent 0%,rgba(20,20,10,0.95) 20%,rgba(20,20,10,0.95) 80%,transparent 100%);}
+.mint-container{
+    max-width:1000px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:20px;
+    width:100%;
+}
+.mint-box{padding:30px 15px;text-align:center;min-width:0;}
+.mint-box:nth-child(1){background:var(--yellow);}
+.mint-box:nth-child(2){background:var(--beige);}
+.mint-box:nth-child(3){background:var(--cream);}
+.mint-box:nth-child(4){background:var(--yellow);}
+.mint-label{
+    font-size:10px;
+    letter-spacing:2px;
+    opacity:0.75;
+    text-transform:lowercase;
+    margin-bottom:12px;
+    color:#000;
+    font-weight:900;
+}
+.mint-value{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(1.5rem,4vw,2.2rem);
+    color:#000;
+    text-transform:uppercase;
+    letter-spacing:-1px;
+    word-break:break-word;
+}
+
+.mint-phases{margin-top:40px;max-width:1000px;margin-left:auto;margin-right:auto;width:100%;}
+.phase{
+    padding:22px 24px;
+    margin-bottom:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    background:#fff;
+}
+.phase:nth-child(2){background:var(--beige-light);}
+.phase:nth-child(3){background:var(--cream);}
+.phase-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.phase-dot{
+    width:14px;height:14px;
+    background:var(--yellow);
+    border:2px solid #000;
+    border-radius:4px;
+    flex-shrink:0;
+}
+.phase-info{display:flex;flex-direction:column;gap:2px;}
+.phase-name{
+    font-family:'Archivo Black',sans-serif;
+    font-size:13px;letter-spacing:0.5px;
+    color:#000;text-transform:lowercase;
+}
+.phase-sub{
+    font-size:10px;opacity:0.6;letter-spacing:1px;
+    color:#000;font-weight:700;text-transform:uppercase;
+}
+.phase-price{
+    font-family:'Archivo Black',sans-serif;
+    font-size:15px;
+    background:#000;color:var(--yellow);
+    padding:7px 14px;border-radius:10px;
+    letter-spacing:1px;border:2px solid #000;
+}
+
+/* ============ COMMUNITY ============ */
+#community{background:linear-gradient(180deg,transparent 0%,rgba(15,15,25,0.95) 20%,rgba(15,15,25,0.95) 80%,transparent 100%);}
+.community-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:30px;
+    max-width:750px;
+    margin:0 auto;
+    width:100%;
+}
+.social-card{
+    padding:40px 25px;
+    text-align:center;
+    text-decoration:none;
+    display:block;
+    background:var(--cream);
+    position:relative;
+    overflow:hidden;
+}
+.social-card.discord-card{
+    background:var(--beige);
+    cursor:not-allowed;
+    pointer-events:none;
+}
+/* Disabled Discord overlay */
+.social-card.discord-card::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    backdrop-filter:blur(3px);
+    -webkit-backdrop-filter:blur(3px);
+    z-index:2;
+}
+.social-card.discord-card .soon-stamp{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) rotate(-8deg);
+    z-index:3;
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(1.4rem,4.5vw,2rem);
+    letter-spacing:5px;
+    color:#000;
+    background:var(--yellow);
+    padding:10px 26px;
+    border:3px solid #000;
+    border-radius:50px;
+    box-shadow:5px 5px 0 #000;
+    text-transform:lowercase;
+    animation:soonPulse 2s ease-in-out infinite;
+}
+@keyframes soonPulse{
+    0%,100%{transform:translate(-50%,-50%) rotate(-8deg) scale(1);}
+    50%{transform:translate(-50%,-50%) rotate(-8deg) scale(1.05);}
+}
+/* Keep inner content slightly dimmed but visible behind overlay */
+.social-card.discord-card .social-icon,
+.social-card.discord-card .social-name,
+.social-card.discord-card .social-handle{
+    opacity:0.5;
+    filter:grayscale(0.3);
+}
+.social-icon{
+    width:85px;height:85px;
+    margin:0 auto 22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    border-radius:22px;
+    border:3px solid #000;
+    box-shadow:4px 4px 0 rgba(0,0,0,0.4);
+    transition:all 0.3s;
+}
+.social-card:not(.discord-card):hover .social-icon{transform:rotate(-8deg) scale(1.08);}
+.social-name{
+    font-family:'Archivo Black',sans-serif;
+    font-size:1.4rem;
+    text-transform:lowercase;
+    letter-spacing:-0.5px;
+    margin-bottom:8px;
+    color:#000;
+}
+.social-handle{
+    font-size:11px;opacity:0.65;letter-spacing:2px;
+    color:#000;font-weight:700;
+}
+
+/* ============ SOON SECTIONS ============ */
+#raffles{background:linear-gradient(180deg,transparent 0%,rgba(20,18,5,0.95) 20%,rgba(20,18,5,0.95) 80%,transparent 100%);}
+#play{background:linear-gradient(180deg,transparent 0%,rgba(5,15,12,0.95) 20%,rgba(5,15,12,0.95) 80%,transparent 100%);}
+#checker{background:linear-gradient(180deg,transparent 0%,rgba(12,12,20,0.95) 20%,rgba(12,12,20,0.95) 80%,transparent 100%);}
+
+.soon-card{
+    max-width:560px;
+    margin:0 auto;
+    text-align:center;
+    padding:40px 25px;
+    background:var(--yellow);
+    width:100%;
+}
+#play .soon-card{background:var(--beige);}
+#checker .soon-card{background:var(--cream);}
+
+.soon-img-wrap{
+    width:100%;
+    max-width:260px;
+    margin:0 auto 22px;
+    aspect-ratio:1/1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.soon-img-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+    filter:drop-shadow(6px 8px 0 rgba(0,0,0,0.2));
+    transition:transform 0.5s;
+}
+.soon-card:hover .soon-img-wrap img{transform:scale(1.06) rotate(-3deg);}
+
+.soon-badge{
+    display:inline-block;
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(1.8rem,5.5vw,3.5rem);
+    letter-spacing:5px;
+    color:#000;
+    background:#fff;
+    padding:8px 24px;
+    border:3px solid #000;
+    border-radius:60px;
+    margin-bottom:18px;
+    box-shadow:5px 5px 0 #000;
+    animation:soonBounce 2s ease-in-out infinite;
+    text-transform:lowercase;
+}
+@keyframes soonBounce{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+}
+.soon-desc{
+    font-size:13px;
+    line-height:1.7;
+    color:#000;
+    max-width:450px;
+    margin:0 auto;
+    letter-spacing:0.3px;
+    font-weight:500;
+    opacity:0.85;
+}
+
+/* ============ FOOTER ============ */
+footer{
+    padding:50px 20px 30px;
+    text-align:center;
+    font-size:10px;
+    letter-spacing:3px;
+    opacity:0.4;
+    position:relative;
+    z-index:10;
+    text-transform:lowercase;
+}
+
+/* ============ MOBILE ============ */
+@media(max-width:768px){
+    :root{--shadow-offset:6px;}
+    section{padding:100px 4vw 60px;}
+    .nav-inner{padding:5px;gap:2px;}
+    .nav-item{font-size:10px;padding:8px 14px;letter-spacing:1px;}
+    .utility-grid{grid-template-columns:1fr;gap:22px;max-width:420px;}
+    .roadmap-item,.roadmap-item:nth-child(even){flex-direction:column;text-align:center;gap:20px;}
+    .roadmap-item:nth-child(even){text-align:center;}
+    .roadmap-visual{width:160px;height:160px;}
+    .roadmap-content{padding:22px 22px;width:100%;}
+    .mint-container{grid-template-columns:repeat(2,1fr);gap:15px;max-width:100%;}
+    .mint-box{padding:24px 12px;}
+    .phase{padding:18px 18px;gap:10px;}
+    .phase-price{font-size:13px;padding:6px 10px;}
+    .community-grid{grid-template-columns:1fr;max-width:360px;}
+    .art-main{max-width:320px;box-shadow:6px 6px 0 var(--yellow);}
+    .art-thumb{width:60px;height:78px;}
+    .soon-card{padding:32px 20px;}
+    .soon-img-wrap{max-width:220px;}
+    .boot-text{font-size:9px;top:5%;left:5%;}
+    .intro-counter{font-size:9px;top:5%;right:5%;}
+    .intro-counter .percent{font-size:26px;}
+    .frame-info{font-size:8px;bottom:5%;left:5%;right:5%;}
+    .corner{width:28px;height:28px;}
+    .corner.tl{top:20px;left:20px;}
+    .corner.tr{top:20px;right:20px;}
+    .corner.bl{bottom:20px;left:20px;}
+    .corner.br{bottom:20px;right:20px;}
+}
+
+@media(max-width:380px){
+    .mint-container{grid-template-columns:1fr;max-width:280px;}
+    .utility-grid{max-width:100%;}
+}
+
+/* ============ DESKTOP ============ */
+@media(min-width:1100px){
+    :root{--shadow-offset:10px;}
+    .section-title{font-size:clamp(3rem,7vw,7.5rem);}
+    .utility-grid{grid-template-columns:repeat(4,1fr);gap:35px;}
+    .utility-card{padding:36px 28px 32px;}
+    .utility-img-wrap{max-width:190px;}
+    .utility-card h3{font-size:1.3rem;}
+    .utility-card p{font-size:13.5px;}
+    .mint-container{grid-template-columns:repeat(4,1fr);}
+    .art-main{max-width:500px;}
+    .art-thumbs{justify-content:center;}
+    .art-thumb{width:90px;height:115px;}
+    .roadmap-path{max-width:1200px;}
+    .roadmap-visual{width:230px;height:230px;}
+    .roadmap-content{padding:32px 38px;}
+    .roadmap-title{font-size:1.8rem;}
+    .roadmap-desc{font-size:14.5px;}
+    .community-grid{max-width:820px;gap:45px;}
+    .social-card{padding:48px 34px;}
+    .soon-card{max-width:640px;padding:55px 45px;}
+    .soon-img-wrap{max-width:300px;}
+}
+</style>
+</head>
+<body id="body" class="intro-active">
+
+<!-- ============ CINEMATIC INTRO ============ -->
+<div class="intro" id="intro">
+    <!-- 3D Grid (Act 3) -->
+    <div class="grid-floor" id="gridFloor"></div>
+    <div class="grid-ceiling" id="gridCeiling"></div>
+
+    <!-- Matrix rain (Act 2) -->
+    <div class="matrix-rain" id="matrixRain"></div>
+
+    <!-- Warp speed streaks (Act 4) -->
+    <div class="warp" id="warp"></div>
+
+    <!-- Corner brackets -->
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <!-- Terminal boot text -->
+    <div class="boot-text" id="bootText">
+        <span class="line" data-text="&gt; booting gloomor_protocol.exe"></span>
+        <span class="line" data-text="&gt; establishing connection..."></span>
+        <span class="line" data-text="&gt; entering the void..."></span>
+        <span class="line" data-text="&gt; access granted<span class='blink-cursor'></span>"></span>
+    </div>
+
+    <!-- Counter -->
+    <div class="intro-counter" id="introCounter">
+        gloomor // v1.0
+        <span class="percent" id="introPercent">000</span>
+    </div>
+
+    <!-- Frame info -->
+    <div class="frame-info" id="frameInfo">
+        <div class="tick">system online</div>
+        <div>eth · 2222 · mainnet</div>
+    </div>
+
+    <!-- Heartbeat + shockwaves -->
+    <div class="heartbeat" id="heartbeat"></div>
+    <div class="shockwave" id="sw1"></div>
+    <div class="shockwave" id="sw2"></div>
+    <div class="shockwave" id="sw3"></div>
+
+    <!-- Rings -->
+    <div class="ring" id="ring1"></div>
+    <div class="ring" id="ring2"></div>
+    <div class="ring" id="ring3"></div>
+
+    <!-- Marquee -->
+    <div class="marquee" id="marquee">GLOOMOR · GLOOMOR · GLOOMOR · GLOOMOR</div>
+
+    <!-- Glitch flash -->
+    <div class="glitch-flash" id="glitch"></div>
+
+    <!-- Vignette -->
+    <div class="intro-vignette" id="introVignette"></div>
+
+    <!-- Main title with 3D echoes -->
+    <div class="title-wrap" id="titleWrap">
+        <h1 class="intro-main" id="introMain"></h1>
+    </div>
+
+    <!-- Iris reveal -->
+    <div class="iris-reveal" id="iris"></div>
+</div>
+
+<div class="vignette"></div>
+<div class="bg-container" id="bg-wall"></div>
+
+<nav class="header-nav" id="headerNav">
+    <div class="nav-inner">
+        <a href="#utility" class="nav-item">utility</a>
+        <a href="#roadmap" class="nav-item">roadmap</a>
+        <a href="#art" class="nav-item">art</a>
+        <a href="#mint-details" class="nav-item">mint</a>
+        <a href="#community" class="nav-item">community</a>
+    </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+    <h1 class="it-is-gloomor" id="main-title"></h1>
+</section>
+
+<!-- ============ UTILITY ============ -->
+<section id="utility">
+    <div class="section-header">
+        <h2 class="section-title" data-text="UTILITY"></h2>
+        <div class="section-subtitle">what u get for holding</div>
+    </div>
+    <div class="utility-grid">
+        <div class="nb-card utility-card">
+            <div class="utility-img-wrap">
+                <!-- HOLDER ACCESS: Vault with key -->
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="100" cy="178" rx="55" ry="6" fill="#000" opacity="0.25"/>
+                    <rect x="36" y="34" width="128" height="128" rx="16" fill="#1a1a1a" stroke="#000" stroke-width="4"/>
+                    <rect x="30" y="28" width="128" height="128" rx="16" fill="#2a2a2a" stroke="#000" stroke-width="4"/>
+                    <rect x="42" y="40" width="104" height="104" rx="10" fill="#0f0f0f" stroke="#000" stroke-width="3"/>
+                    <circle cx="52" cy="50" r="4" fill="#000"/>
+                    <circle cx="136" cy="50" r="4" fill="#000"/>
+                    <circle cx="52" cy="134" r="4" fill="#000"/>
+                    <circle cx="136" cy="134" r="4" fill="#000"/>
+                    <circle cx="94" cy="92" r="36" fill="#d4ff47" stroke="#000" stroke-width="4"/>
+                    <circle cx="94" cy="92" r="26" fill="#1a1a1a" stroke="#000" stroke-width="3"/>
+                    <path d="M94 70 L97 88 L91 88 Z" fill="#d4ff47"/>
+                    <circle cx="94" cy="92" r="6" fill="#d4ff47" stroke="#000" stroke-width="2"/>
+                    <line x1="94" y1="60" x2="94" y2="66" stroke="#000" stroke-width="2"/>
+                    <line x1="126" y1="92" x2="120" y2="92" stroke="#000" stroke-width="2"/>
+                    <line x1="94" y1="124" x2="94" y2="118" stroke="#000" stroke-width="2"/>
+                    <line x1="62" y1="92" x2="68" y2="92" stroke="#000" stroke-width="2"/>
+                    <rect x="132" y="86" width="22" height="12" rx="3" fill="#d4ff47" stroke="#000" stroke-width="3"/>
+                    <circle cx="155" cy="92" r="7" fill="#d4ff47" stroke="#000" stroke-width="3"/>
+                    <path d="M42 40 L60 40 L42 60 Z" fill="#fff" opacity="0.08"/>
+                    <path d="M100 140 L108 160 L115 170" stroke="#000" stroke-width="2" fill="none" stroke-dasharray="3 2"/>
+                    <circle cx="125" cy="172" r="11" fill="none" stroke="#000" stroke-width="4"/>
+                    <circle cx="125" cy="172" r="4" fill="#1a1a1a"/>
+                    <rect x="130" y="170" width="18" height="5" fill="#000"/>
+                    <rect x="140" y="175" width="3" height="5" fill="#000"/>
+                    <rect x="145" y="175" width="3" height="4" fill="#000"/>
+                </svg>
+            </div>
+            <h3>holder access</h3>
+            <p>exclusive drops, early access to collabs, and gated community spaces. your key to the gloomor ecosystem.</p>
+        </div>
+
+        <div class="nb-card utility-card">
+            <div class="utility-img-wrap">
+                <!-- $GLOOM TOKEN: Stacked coins -->
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="100" cy="178" rx="60" ry="6" fill="#000" opacity="0.25"/>
+                    <ellipse cx="100" cy="155" rx="58" ry="14" fill="#7a8a2a" stroke="#000" stroke-width="3"/>
+                    <rect x="42" y="140" width="116" height="15" fill="#7a8a2a" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+                    <ellipse cx="100" cy="140" rx="58" ry="14" fill="#9fb538" stroke="#000" stroke-width="3"/>
+                    <rect x="42" y="115" width="116" height="18" fill="#9fb538" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+                    <ellipse cx="100" cy="115" rx="58" ry="14" fill="#b8d13f" stroke="#000" stroke-width="3"/>
+                    <ellipse cx="100" cy="90" rx="58" ry="14" fill="#9fb538" stroke="#000" stroke-width="3"/>
+                    <rect x="42" y="75" width="116" height="15" fill="#b8d13f" stroke="#000" stroke-width="3" stroke-linejoin="round"/>
+                    <ellipse cx="100" cy="75" rx="58" ry="14" fill="#d4ff47" stroke="#000" stroke-width="4"/>
+                    <ellipse cx="100" cy="75" rx="48" ry="10" fill="none" stroke="#000" stroke-width="1.5" opacity="0.4"/>
+                    <text x="100" y="82" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="22" fill="#000" font-weight="900">$</text>
+                    <ellipse cx="78" cy="70" rx="14" ry="3" fill="#fff" opacity="0.5"/>
+                    <line x1="42" y1="75" x2="42" y2="90" stroke="#000" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="158" y1="75" x2="158" y2="90" stroke="#000" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="42" y1="115" x2="42" y2="133" stroke="#000" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="158" y1="115" x2="158" y2="133" stroke="#000" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="42" y1="140" x2="42" y2="155" stroke="#000" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="158" y1="140" x2="158" y2="155" stroke="#000" stroke-width="1.5" opacity="0.6"/>
+                    <g transform="translate(150 35) rotate(15)">
+                        <ellipse cx="0" cy="0" rx="16" ry="5" fill="#7a8a2a" stroke="#000" stroke-width="2"/>
+                        <rect x="-16" y="-4" width="32" height="5" fill="#9fb538" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+                        <ellipse cx="0" cy="-4" rx="16" ry="5" fill="#d4ff47" stroke="#000" stroke-width="2.5"/>
+                        <text x="0" y="-1" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="8" fill="#000" font-weight="900">$</text>
+                    </g>
+                    <path d="M135 22 L128 18 M170 22 L177 18 M125 42 L119 45" stroke="#000" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                    <g transform="translate(40 50)">
+                        <path d="M0 -6 L1.5 -1.5 L6 0 L1.5 1.5 L0 6 L-1.5 1.5 L-6 0 L-1.5 -1.5 Z" fill="#d4ff47" stroke="#000" stroke-width="1.5"/>
+                    </g>
+                    <g transform="translate(170 110) scale(0.7)">
+                        <path d="M0 -6 L1.5 -1.5 L6 0 L1.5 1.5 L0 6 L-1.5 1.5 L-6 0 L-1.5 -1.5 Z" fill="#d4ff47" stroke="#000" stroke-width="1.5"/>
+                    </g>
+                </svg>
+            </div>
+            <h3>$gloom token</h3>
+            <p>a future token launch. holders only, ofc. fuel the ecosystem, earn, unlock perks, repeat.</p>
+        </div>
+
+        <div class="nb-card utility-card">
+            <div class="utility-img-wrap">
+                <img src="utility-drops.png" alt="Future Drops">
+            </div>
+            <h3>future drops</h3>
+            <p>free & priority on every future drop we release. holders eat first. always.</p>
+        </div>
+
+        <div class="nb-card utility-card">
+            <div class="utility-img-wrap">
+                <img src="utility-collabs.png" alt="Collabs and Games">
+            </div>
+            <h3>collabs & games</h3>
+            <p>future collabs with other projects. shared games, events, cross-community perks. wagmi.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="roadmap">
+    <div class="section-header">
+        <h2 class="section-title" data-text="ROADMAP"></h2>
+        <div class="section-subtitle">the path into the gloom</div>
+    </div>
+    <div class="roadmap-path">
+        <div class="roadmap-item">
+            <div class="nb-card roadmap-visual">
+                <img src="roadmap-01.png" alt="Phase 01">
+            </div>
+            <div class="nb-card roadmap-content">
+                <span class="roadmap-phase">PHASE 01</span>
+                <div class="roadmap-title">the awakening</div>
+                <div class="roadmap-desc">launch day. we drop the first mint, reveal the lore, and the community wakes up. the gloomy ones arrive.</div>
+            </div>
+        </div>
+
+        <div class="roadmap-item">
+            <div class="nb-card roadmap-visual">
+                <img src="roadmap-02.png" alt="Phase 02">
+            </div>
+            <div class="nb-card roadmap-content">
+                <span class="roadmap-phase">PHASE 02</span>
+                <div class="roadmap-title">the expansion</div>
+                <div class="roadmap-desc">$gloom token goes live. holder-only drops, irl events, and the first wave of merch. we scale up.</div>
+            </div>
+        </div>
+
+        <div class="roadmap-item">
+            <div class="nb-card roadmap-visual">
+                <img src="roadmap-03.png" alt="Phase 03">
+            </div>
+            <div class="nb-card roadmap-content">
+                <span class="roadmap-phase">PHASE 03</span>
+                <div class="roadmap-title">the game</div>
+                <div class="roadmap-desc">gloomor play launches. your nft becomes your character. raffles, rewards, and pure chaos.</div>
+            </div>
+        </div>
+
+        <!-- THE INFINITE - Custom SVG illustration -->
+        <div class="roadmap-item">
+            <div class="nb-card roadmap-visual">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="planetGrad" cx="35%" cy="35%">
+                            <stop offset="0%" stop-color="#3a3a55"/>
+                            <stop offset="60%" stop-color="#1a1a2e"/>
+                            <stop offset="100%" stop-color="#08081a"/>
+                        </radialGradient>
+                        <radialGradient id="glowGrad" cx="50%" cy="50%">
+                            <stop offset="0%" stop-color="#d4ff47" stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="#d4ff47" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Deep space glow behind planet -->
+                    <circle cx="100" cy="100" r="90" fill="url(#glowGrad)"/>
+
+                    <!-- Distant stars -->
+                    <circle cx="30" cy="35" r="1.5" fill="#fff"/>
+                    <circle cx="165" cy="28" r="1" fill="#fff" opacity="0.8"/>
+                    <circle cx="175" cy="75" r="1.5" fill="#d4ff47"/>
+                    <circle cx="20" cy="115" r="1" fill="#fff" opacity="0.7"/>
+                    <circle cx="180" cy="150" r="1.2" fill="#fff" opacity="0.9"/>
+                    <circle cx="25" cy="170" r="1" fill="#d4ff47" opacity="0.8"/>
+                    <circle cx="145" cy="18" r="0.8" fill="#fff" opacity="0.6"/>
+                    <circle cx="55" cy="20" r="1" fill="#fff" opacity="0.7"/>
+
+                    <!-- Sparkle stars (4-pointed) -->
+                    <g transform="translate(45 55)">
+                        <path d="M0 -5 L1 -1 L5 0 L1 1 L0 5 L-1 1 L-5 0 L-1 -1 Z" fill="#d4ff47"/>
+                    </g>
+                    <g transform="translate(160 125) scale(0.8)">
+                        <path d="M0 -5 L1 -1 L5 0 L1 1 L0 5 L-1 1 L-5 0 L-1 -1 Z" fill="#fff"/>
+                    </g>
+                    <g transform="translate(40 155) scale(0.7)">
+                        <path d="M0 -5 L1 -1 L5 0 L1 1 L0 5 L-1 1 L-5 0 L-1 -1 Z" fill="#d4ff47"/>
+                    </g>
+
+                    <!-- Outer orbital ring (tilted, back half) -->
+                    <ellipse cx="100" cy="108" rx="82" ry="22" fill="none" stroke="#000" stroke-width="3" stroke-dasharray="0 1000" pathLength="1000" transform="rotate(-15 100 108)"/>
+                    <!-- Back half visible -->
+                    <path d="M 20 95 A 82 22 0 0 1 182 95" fill="none" stroke="#555" stroke-width="2" transform="rotate(-15 100 108)" opacity="0.5"/>
+
+                    <!-- Planet shadow (ground contact) -->
+                    <ellipse cx="100" cy="168" rx="60" ry="7" fill="#000" opacity="0.4"/>
+
+                    <!-- The Planet (dark, moody) -->
+                    <circle cx="100" cy="100" r="58" fill="url(#planetGrad)" stroke="#000" stroke-width="4"/>
+                    
+                    <!-- Planet surface details - craters/features -->
+                    <ellipse cx="82" cy="92" rx="10" ry="5" fill="#0a0a18" opacity="0.7"/>
+                    <ellipse cx="115" cy="108" rx="8" ry="4" fill="#0a0a18" opacity="0.7"/>
+                    <ellipse cx="100" cy="125" rx="12" ry="3" fill="#0a0a18" opacity="0.5"/>
+                    
+                    <!-- Planet highlight (upper-left shine) -->
+                    <ellipse cx="80" cy="82" rx="16" ry="10" fill="#d4ff47" opacity="0.15"/>
+
+                    <!-- Glowing infinity symbol on planet surface -->
+                    <g transform="translate(100 102)">
+                        <!-- Infinity outer glow -->
+                        <path d="M -20 0 C -20 -10, -12 -10, -8 -3 C -5 2, 5 2, 8 -3 C 12 -10, 20 -10, 20 0 C 20 10, 12 10, 8 3 C 5 -2, -5 -2, -8 3 C -12 10, -20 10, -20 0 Z" 
+                              fill="none" stroke="#d4ff47" stroke-width="7" opacity="0.35"/>
+                        <!-- Infinity main stroke -->
+                        <path d="M -20 0 C -20 -10, -12 -10, -8 -3 C -5 2, 5 2, 8 -3 C 12 -10, 20 -10, 20 0 C 20 10, 12 10, 8 3 C 5 -2, -5 -2, -8 3 C -12 10, -20 10, -20 0 Z" 
+                              fill="none" stroke="#d4ff47" stroke-width="3.5" stroke-linecap="round"/>
+                        <!-- Center pulse dot -->
+                        <circle cx="0" cy="0" r="2.5" fill="#fff"/>
+                    </g>
+
+                    <!-- Outer orbital ring (front half, over planet) -->
+                    <path d="M 20 121 A 82 22 0 0 0 182 121" fill="none" stroke="#d4ff47" stroke-width="3.5" transform="rotate(-15 100 108)" stroke-linecap="round"/>
+
+                    <!-- Orbital satellite (small coin/token) -->
+                    <g transform="translate(145 128)">
+                        <circle cx="0" cy="0" r="8" fill="#d4ff47" stroke="#000" stroke-width="2.5"/>
+                        <text x="0" y="3" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="9" fill="#000" font-weight="900">$</text>
+                    </g>
+                    <!-- Small satellite on other side -->
+                    <g transform="translate(38 85)">
+                        <circle cx="0" cy="0" r="5" fill="#fff" stroke="#000" stroke-width="2"/>
+                    </g>
+                    
+                    <!-- Tiny rocket trail -->
+                    <g transform="translate(155 45) rotate(30)">
+                        <path d="M 0 0 L -2 -8 L 0 -14 L 2 -8 Z" fill="#d4ff47" stroke="#000" stroke-width="1.5"/>
+                        <path d="M -1 -1 L -3 4 L 0 3 L 3 4 L 1 -1" fill="#fff" stroke="#000" stroke-width="1.2"/>
+                        <circle cx="0" cy="-10" r="1.2" fill="#000"/>
+                    </g>
+
+                    <!-- Ambient light beam from infinity -->
+                    <path d="M 100 102 L 100 80" stroke="#d4ff47" stroke-width="0.8" opacity="0.3"/>
+                    <path d="M 80 102 L 65 95" stroke="#d4ff47" stroke-width="0.8" opacity="0.3"/>
+                    <path d="M 120 102 L 135 95" stroke="#d4ff47" stroke-width="0.8" opacity="0.3"/>
+                </svg>
+            </div>
+            <div class="nb-card roadmap-content">
+                <span class="roadmap-phase">PHASE 04</span>
+                <div class="roadmap-title">the infinite</div>
+                <div class="roadmap-desc">gloomor becomes a brand. cross-chain, major collabs, and a metaverse home for the gloomy. no ceiling.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ ART ============ -->
+<section id="art">
+    <div class="section-header">
+        <h2 class="section-title" data-text="ART"></h2>
+        <div class="section-subtitle">10 of the gloomy ones · swipe to explore</div>
+    </div>
+    <div class="art-wrap">
+        <div class="art-main" id="artMain">
+            <div class="art-badges">
+                <div class="art-id-badge" id="artIdBadge">GLOOM #01</div>
+                <div class="art-count-badge"><span id="artCurrent">01</span> / 10</div>
+            </div>
+            <div class="art-main-inner" id="artMainInner"></div>
+        </div>
+
+        <div class="art-arrows">
+            <button class="art-arrow" onclick="moveArt(-1)">←</button>
+            <button class="art-arrow" onclick="moveArt(1)">→</button>
+        </div>
+
+        <div class="art-thumbs-wrap">
+            <div class="art-thumbs" id="artThumbs"></div>
+        </div>
+        <div class="art-hint">tap thumb · swipe card · use ← → keys</div>
+    </div>
+</section>
+
+<!-- ============ MINT ============ -->
+<section id="mint-details">
+    <div class="section-header">
+        <h2 class="section-title" data-text="MINT"></h2>
+        <div class="section-subtitle">the drop details</div>
+    </div>
+    <div class="mint-container">
+        <div class="nb-card mint-box"><div class="mint-label">supply</div><div class="mint-value">2222</div></div>
+        <div class="nb-card mint-box"><div class="mint-label">chain</div><div class="mint-value">ETH</div></div>
+        <div class="nb-card mint-box"><div class="mint-label">mint price</div><div class="mint-value">0.0009</div></div>
+        <div class="nb-card mint-box"><div class="mint-label">date</div><div class="mint-value">TBA</div></div>
+    </div>
+    <div class="mint-phases">
+        <div class="nb-card phase">
+            <div class="phase-left">
+                <div class="phase-dot"></div>
+                <div class="phase-info">
+                    <div class="phase-name">gtd · og list</div>
+                    <div class="phase-sub">guaranteed · 1h window</div>
+                </div>
+            </div>
+            <div class="phase-price">0.0009 Ξ</div>
+        </div>
+        <div class="nb-card phase">
+            <div class="phase-left">
+                <div class="phase-dot"></div>
+                <div class="phase-info">
+                    <div class="phase-name">fcfs · whitelist</div>
+                    <div class="phase-sub">first come first served · 2h window</div>
+                </div>
+            </div>
+            <div class="phase-price">0.001 Ξ</div>
+        </div>
+        <div class="nb-card phase">
+            <div class="phase-left">
+                <div class="phase-dot"></div>
+                <div class="phase-info">
+                    <div class="phase-name">public</div>
+                    <div class="phase-sub">open to all · remaining supply</div>
+                </div>
+            </div>
+            <div class="phase-price">0.0015 Ξ</div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ CHECKER ============ -->
+<section id="checker">
+    <div class="section-header">
+        <h2 class="section-title" data-text="CHECKER"></h2>
+        <div class="section-subtitle">find ur mint phase</div>
+    </div>
+    <div class="nb-card soon-card">
+        <div class="soon-img-wrap"><img src="checker.png" alt="Checker"></div>
+        <div class="soon-badge">soon</div>
+        <div class="soon-desc">paste ur wallet, see which phase ur in. live before the drop.</div>
+    </div>
+</section>
+
+<!-- ============ RAFFLES ============ -->
+<section id="raffles">
+    <div class="section-header">
+        <h2 class="section-title" data-text="RAFFLES"></h2>
+        <div class="section-subtitle">weekly prizes for holders</div>
+    </div>
+    <div class="nb-card soon-card">
+        <div class="soon-img-wrap"><img src="raffles.png" alt="Raffles"></div>
+        <div class="soon-badge">soon</div>
+        <div class="soon-desc">weekly raffles for holders. prizes, nfts, and surprises that make the gloom worth it.</div>
+    </div>
+</section>
+
+<!-- ============ PLAY ============ -->
+<section id="play">
+    <div class="section-header">
+        <h2 class="section-title" data-text="PLAY"></h2>
+        <div class="section-subtitle">the gloomor game</div>
+    </div>
+    <div class="nb-card soon-card">
+        <div class="soon-img-wrap"><img src="play.png" alt="Play"></div>
+        <div class="soon-badge">soon</div>
+        <div class="soon-desc">an interactive gloomor experience. ur nft becomes ur character in a world built for the gloomy.</div>
+    </div>
+</section>
+
+<!-- ============ COMMUNITY ============ -->
+<section id="community">
+    <div class="section-header">
+        <h2 class="section-title" data-text="COMMUNITY"></h2>
+        <div class="section-subtitle">join the coven</div>
+    </div>
+    <div class="community-grid">
+        <a href="https://x.com/itsGLOOMOR" target="_blank" class="nb-card social-card x-card">
+            <div class="social-icon">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <div class="social-name">x / twitter</div>
+            <div class="social-handle">@itsGLOOMOR</div>
+        </a>
+        <!-- DISCORD - DISABLED with SOON overlay -->
+        <div class="nb-card social-card discord-card">
+            <div class="soon-stamp">soon</div>
+            <div class="social-icon">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="#fff"><path d="M20.317 4.369A19.791 19.791 0 0016.558 3c-.175.317-.38.742-.521 1.08a18.27 18.27 0 00-5.074 0C10.823 3.742 10.612 3.317 10.438 3A19.731 19.731 0 006.677 4.369C2.982 9.896 2.01 15.284 2.496 20.598c1.987 1.48 3.912 2.378 5.81 2.968.469-.646.884-1.331 1.243-2.05-.678-.258-1.326-.576-1.94-.945.163-.12.321-.246.474-.375 3.765 1.75 7.836 1.75 11.55 0 .156.13.314.255.475.375-.615.37-1.266.687-1.944.946.359.719.773 1.404 1.242 2.05 1.9-.59 3.827-1.488 5.814-2.97.569-6.162-.971-11.503-4.084-16.228zM9.095 15.866c-1.184 0-2.156-1.085-2.156-2.42 0-1.335.95-2.42 2.156-2.42 1.205 0 2.175 1.085 2.156 2.42 0 1.335-.95 2.42-2.156 2.42zm5.81 0c-1.183 0-2.155-1.085-2.155-2.42 0-1.335.95-2.42 2.156-2.42s2.175 1.085 2.156 2.42c0 1.335-.95 2.42-2.156 2.42z"/></svg>
+            </div>
+            <div class="social-name">discord</div>
+            <div class="social-handle">JOIN THE COVEN</div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    © 2026 gloomor · the eternal gloom
+</footer>
+
+<script>
+// ============ INTRO SETUP ============
+const introMain = document.getElementById('introMain');
+const introText = "IT'S GLOOMOR";
+introMain.innerHTML = introText.split('').map(char =>
+    char === ' ' ? '<br>' : `<span class="intro-char">${char}</span>`
+).join('');
+
+// ============ MATRIX RAIN ============
+const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567$GLOOMOR!@#<>/\\|';
+const rainContainer = document.getElementById('matrixRain');
+const numColumns = Math.floor(window.innerWidth / 28);
+const rainCols = [];
+for(let i=0; i<numColumns; i++){
+    const col = document.createElement('div');
+    col.className = 'rain-col';
+    col.style.left = (i * 28) + 'px';
+    let str = '';
+    for(let j=0; j<25; j++){
+        str += matrixChars[Math.floor(Math.random() * matrixChars.length)] + '\n';
+    }
+    col.textContent = str;
+    rainContainer.appendChild(col);
+    rainCols.push(col);
+}
+
+// ============ WARP LINES ============
+const warpContainer = document.getElementById('warp');
+const warpLines = [];
+for(let i=0; i<80; i++){
+    const line = document.createElement('div');
+    line.className = 'warp-line';
+    warpContainer.appendChild(line);
+    warpLines.push(line);
+}
+
+// ============ PARTICLES ============
+function createParticles(count){
+    const particles = [];
+    for(let i=0; i<count; i++){
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        document.getElementById('intro').appendChild(p);
+        particles.push(p);
+    }
+    return particles;
+}
+const particles = createParticles(80);
+
+// ============ MASTER TIMELINE ============
+const tl = gsap.timeline({
+    onComplete: () => {
+        document.body.classList.remove('intro-active');
+        document.getElementById('intro').style.display = 'none';
+        document.getElementById('headerNav').classList.add('visible');
+    }
+});
+
+// ═══════════════════════════════════════════════
+// ACT 1 — THE VOID (Heartbeat awakens)
+// ═══════════════════════════════════════════════
+
+// Corner brackets flicker on
+tl.to('.corner', {
+    opacity: 1,
+    duration: 0.12,
+    stagger: {each: 0.06, from: "random"},
+    ease: "steps(3)"
+})
+
+// First heartbeat pulse
+.to('#heartbeat', {opacity: 1, scale: 1.2, duration: 0.25, ease: "power2.out"}, "+=0.2")
+.to('#heartbeat', {scale: 0.8, duration: 0.15, ease: "power2.in"})
+.to('#heartbeat', {scale: 1.5, duration: 0.3, ease: "power2.out"})
+.to('#heartbeat', {scale: 1, duration: 0.2, ease: "power2.inOut"})
+
+// Shockwaves ripple out on each beat
+.fromTo('#sw1',
+    {width: 20, height: 20, opacity: 1, borderWidth: 3},
+    {width: '600px', height: '600px', opacity: 0, borderWidth: 1, duration: 1.5, ease: "power3.out"},
+"-=0.6")
+.fromTo('#sw2',
+    {width: 20, height: 20, opacity: 1, borderWidth: 3},
+    {width: '900px', height: '900px', opacity: 0, borderWidth: 1, duration: 1.8, ease: "power3.out"},
+"-=1.2")
+.fromTo('#sw3',
+    {width: 20, height: 20, opacity: 1, borderWidth: 3},
+    {width: '1200px', height: '1200px', opacity: 0, borderWidth: 1, duration: 2, ease: "power3.out"},
+"-=1.5")
+
+// Boot text typewriter starts during heartbeat
+.to('#bootText', {opacity: 1, duration: 0.2}, "-=1.8")
+.to('.line:nth-child(1)', {width: '100%', duration: 0.5, ease: "steps(28)"}, "-=1.6")
+.to('.line:nth-child(2)', {width: '100%', duration: 0.45, ease: "steps(25)"}, "-=1.1")
+.to('.line:nth-child(3)', {width: '100%', duration: 0.45, ease: "steps(22)"}, "-=0.65")
+.to('.line:nth-child(4)', {width: '100%', duration: 0.4, ease: "steps(18)"}, "-=0.2")
+
+// Counter spinning
+.to('#introCounter', {opacity: 1, duration: 0.3}, "-=2.8")
+.to('#introPercent', {
+    innerText: 100,
+    duration: 3.8,
+    snap: {innerText: 1},
+    ease: "power1.inOut",
+    onUpdate: function(){
+        const val = Math.floor(this.targets()[0].innerText);
+        this.targets()[0].innerText = String(val).padStart(3, '0');
+    }
+}, "-=2.8")
+
+.to('#frameInfo', {opacity: 1, duration: 0.4}, "-=2.5")
+
+// Heartbeat fades away
+.to('#heartbeat', {opacity: 0, scale: 8, duration: 0.6, ease: "power2.out"}, "-=1.5")
+
+// ═══════════════════════════════════════════════
+// ACT 2 — DATA STORM (Matrix rain)
+// ═══════════════════════════════════════════════
+
+// Matrix rain pours down
+.to(rainCols, {
+    opacity: 0.6,
+    duration: 0.3,
+    stagger: {each: 0.015, from: "random"}
+}, "-=1.2")
+.to(rainCols, {
+    top: '100vh',
+    duration: 1.6,
+    stagger: {each: 0.02, from: "random"},
+    ease: "power2.in"
+}, "-=1")
+
+// ═══════════════════════════════════════════════
+// ACT 3 — THE GRID (3D space forms)
+// ═══════════════════════════════════════════════
+
+// Grid floor and ceiling build outward
+.to('#gridFloor', {
+    opacity: 1,
+    duration: 0.8,
+    ease: "power2.out"
+}, "-=1.3")
+.to('#gridCeiling', {
+    opacity: 1,
+    duration: 0.8,
+    ease: "power2.out"
+}, "-=0.8")
+
+// Rain finishes falling
+.to(rainCols, {opacity: 0, duration: 0.4}, "-=0.6")
+
+// ═══════════════════════════════════════════════
+// ACT 4 — WARP SPEED (the jump)
+// ═══════════════════════════════════════════════
+
+// Warp lines emerge from center, streak outward
+.add(() => {
+    warpLines.forEach((line, i) => {
+        const angle = (Math.PI * 2) * (i / warpLines.length) + (Math.random() * 0.5);
+        const distance = 400 + Math.random() * 600;
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        const length = 80 + Math.random() * 200;
+
+        gsap.set(line, {
+            x: 0, y: 0,
+            width: 2,
+            height: 2,
+            opacity: 0,
+            rotation: (angle * 180 / Math.PI) + 90
+        });
+
+        gsap.to(line, {
+            opacity: 1,
+            duration: 0.1,
+            delay: i * 0.003
+        });
+
+        gsap.to(line, {
+            x: endX,
+            y: endY,
+            width: length,
+            height: 1.5,
+            duration: 0.6 + Math.random() * 0.3,
+            delay: i * 0.003,
+            ease: "power3.out"
+        });
+
+        gsap.to(line, {
+            opacity: 0,
+            duration: 0.3,
+            delay: 0.5 + i * 0.003
+        });
+    });
+})
+.to({}, {duration: 0.5})
+
+// Particles burst & converge to center
+.to(particles, {
+    opacity: 1,
+    duration: 0.2,
+    stagger: {each: 0.004, from: "random"}
+}, "-=0.3")
+.to(particles, {
+    left: '50%',
+    top: '50%',
+    duration: 0.7,
+    stagger: {each: 0.003, from: "random"},
+    ease: "power3.in"
+})
+
+// Rings explode from center
+.to('#ring1', {width: '400px', height: '400px', opacity: 1, duration: 0}, "-=0.2")
+.to('#ring1', {
+    width: '1800px', height: '1800px', opacity: 0,
+    borderWidth: '1px',
+    duration: 1.3, ease: "power3.out"
+}, "-=0")
+.to('#ring2', {width: '300px', height: '300px', opacity: 1, duration: 0}, "-=1.2")
+.to('#ring2', {
+    width: '2100px', height: '2100px', opacity: 0,
+    borderWidth: '1px',
+    duration: 1.5, ease: "power3.out"
+}, "-=1.2")
+.to('#ring3', {width: '200px', height: '200px', opacity: 1, duration: 0}, "-=1.4")
+.to('#ring3', {
+    width: '2400px', height: '2400px', opacity: 0,
+    borderWidth: '1px',
+    duration: 1.7, ease: "power3.out"
+}, "-=1.4")
+
+// Glitch burst + camera shake
+.to('#titleWrap', {x: -10, duration: 0.04, repeat: 14, yoyo: true, ease: "none"}, "-=1.4")
+.to('#glitch', {opacity: 0.95, duration: 0.05, repeat: 4, yoyo: true}, "-=1.4")
+
+// Particles explode outward
+.to(particles, {
+    opacity: 0,
+    scale: 3,
+    duration: 0.5,
+    ease: "power2.out"
+}, "-=1.2")
+
+// MARQUEE flash sweeps across
+.fromTo('#marquee',
+    {x: '-100%', opacity: 0},
+    {x: '50%', opacity: 1, duration: 0.5, ease: "power4.out"},
+"-=1")
+.to('#marquee', {opacity: 0, x: '100%', duration: 0.3}, "-=0.1")
+
+// ═══════════════════════════════════════════════
+// ACT 5 — EMERGENCE (Title materializes from deep space)
+// ═══════════════════════════════════════════════
+
+// Title container emerges
+.to('#introMain', {opacity: 1, duration: 0.1}, "-=0.3")
+
+// Each letter flies in from deep Z-space with staggered spiral
+.to('.intro-char', {
+    opacity: 1,
+    z: 0,
+    scale: 1,
+    duration: 1.2,
+    stagger: {each: 0.08, from: "center"},
+    ease: "back.out(1.8)"
+})
+
+// Final elastic settle (shake)
+.to('#titleWrap', {
+    x: 0,
+    duration: 0.4,
+    ease: "elastic.out(1, 0.4)"
+}, "-=0.4")
+
+// Vignette darkens edges slightly for cinematic feel
+.to('#introVignette', {opacity: 1, duration: 0.6}, "-=0.8")
+
+// Hold moment
+.to({}, {duration: 0.8})
+
+// Fade UI elements out
+.to('#bootText, #introCounter, #frameInfo, .corner', {
+    opacity: 0,
+    duration: 0.4,
+    ease: "power2.in"
+})
+
+// Grid fades
+.to('#gridFloor, #gridCeiling', {opacity: 0, duration: 0.5}, "-=0.4")
+
+// Iris circle mask reveal — the cinematic transition
+.to('#iris', {
+    clipPath: 'circle(180% at 50% 50%)',
+    duration: 1.3,
+    ease: "power4.inOut"
+}, "-=0.2")
+
+// Fade whole intro
+.to('#intro', {
+    opacity: 0,
+    duration: 0.3
+}, "-=0.2");
+
+
+// ============ SPLIT HERO TEXT ============
+const titleContainer = document.getElementById('main-title');
+const textContent = "IT'S GLOOMOR";
+titleContainer.innerHTML = textContent.split('').map(char =>
+    char === ' ' ? '<br>' : `<span class="char">${char}</span>`
+).join('');
+
+document.querySelectorAll('.section-title').forEach(el => {
+    const text = el.getAttribute('data-text');
+    el.innerHTML = text.split('').map(c => `<span class="char-anim">${c}</span>`).join('');
+});
+
+// ============ BACKGROUND WALL ============
+const bgWall = document.getElementById('bg-wall');
+for(let i=0; i<25; i++){
+    const row = document.createElement('div');
+    row.className = 'bg-row';
+    row.innerHTML = `<span>GLOOMOR</span>`.repeat(12);
+    bgWall.appendChild(row);
+}
+
+gsap.to(".bg-row:nth-child(even)",{xPercent:-30,duration:25,repeat:-1,yoyo:true,ease:"none"});
+gsap.to(".bg-row:nth-child(odd)",{xPercent:30,duration:25,repeat:-1,yoyo:true,ease:"none"});
+
+if(window.innerWidth > 768){
+    document.addEventListener('mousemove',(e)=>{
+        const x = (e.clientX/window.innerWidth - 0.5) * 50;
+        const y = (e.clientY/window.innerHeight - 0.5) * 50;
+        gsap.to("#bg-wall",{x:x,y:y,duration:2});
+    });
+}
+
+// ============ ART GALLERY ============
+const totalArt = 10;
+const mainInner = document.getElementById('artMainInner');
+const thumbsWrap = document.getElementById('artThumbs');
+const artMain = document.getElementById('artMain');
+
+for(let i=0; i<totalArt; i++){
+    const slide = document.createElement('div');
+    slide.className = 'art-main-slide' + (i===0 ? ' active' : '');
+    slide.innerHTML = `<img src="nft${i+1}.png" alt="GLOOM #${String(i+1).padStart(2,'0')}">`;
+    mainInner.appendChild(slide);
+
+    const thumb = document.createElement('div');
+    thumb.className = 'art-thumb' + (i===0 ? ' active' : '');
+    thumb.innerHTML = `
+        <img src="nft${i+1}.png" alt="">
+        <div class="art-thumb-num">${String(i+1).padStart(2,'0')}</div>
+    `;
+    thumb.addEventListener('click',()=>goToArt(i));
+    thumbsWrap.appendChild(thumb);
+}
+
+let currentArt = 0;
+const slides = document.querySelectorAll('.art-main-slide');
+const thumbs = document.querySelectorAll('.art-thumb');
+
+function updateArt(){
+    slides.forEach((s,i)=>s.classList.toggle('active', i === currentArt));
+    thumbs.forEach((t,i)=>t.classList.toggle('active', i === currentArt));
+    document.getElementById('artCurrent').textContent = String(currentArt+1).padStart(2,'0');
+    document.getElementById('artIdBadge').textContent = `GLOOM #${String(currentArt+1).padStart(2,'0')}`;
+    const activeThumb = thumbs[currentArt];
+    if(activeThumb) activeThumb.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+
+function moveArt(dir){currentArt = (currentArt + dir + totalArt) % totalArt; updateArt();}
+function goToArt(i){currentArt = i; updateArt();}
+
+document.addEventListener('keydown',(e)=>{
+    if(e.key === 'ArrowLeft') moveArt(-1);
+    if(e.key === 'ArrowRight') moveArt(1);
+});
+
+let touchStartX = 0, touchEndX = 0;
+artMain.addEventListener('touchstart',(e)=>{touchStartX = e.changedTouches[0].screenX;}, {passive:true});
+artMain.addEventListener('touchend',(e)=>{
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    if(Math.abs(diff) > 40) moveArt(diff > 0 ? -1 : 1);
+}, {passive:true});
+artMain.addEventListener('click',(e)=>{
+    if(Math.abs(touchEndX - touchStartX) < 10) moveArt(1);
+});
+
+// ============ SCROLL REVEAL ============
+gsap.registerPlugin(ScrollTrigger);
+
+document.querySelectorAll('.roadmap-item').forEach((item) => {
+    ScrollTrigger.create({
+        trigger: item, start: "top 85%",
+        onEnter: () => item.classList.add('visible'),
+        once: true
+    });
+});
+
+document.querySelectorAll('.section-title').forEach(title => {
+    const chars = title.querySelectorAll('.char-anim');
+    gsap.from(chars, {
+        y: 80, opacity: 0, duration: 0.6,
+        stagger: 0.04, ease: "back.out(1.7)",
+        scrollTrigger: {trigger: title, start: "top 85%", once: true}
+    });
+});
+
+gsap.utils.toArray('.utility-card').forEach((card,i)=>{
+    gsap.from(card,{
+        y:60, opacity:0, duration:0.7, delay:i*0.1,
+        ease:"back.out(1.5)",
+        scrollTrigger:{trigger:card,start:"top 90%",once:true}
+    });
+});
+
+gsap.utils.toArray('.mint-box').forEach((box,i)=>{
+    gsap.from(box,{
+        scale:0.5, opacity:0, duration:0.6, delay:i*0.1,
+        ease:"back.out(1.7)",
+        scrollTrigger:{trigger:box,start:"top 90%",once:true}
+    });
+});
+
+gsap.utils.toArray('.phase').forEach((p,i)=>{
+    gsap.from(p,{
+        x:-50, opacity:0, duration:0.5, delay:i*0.1,
+        scrollTrigger:{trigger:p,start:"top 90%",once:true}
+    });
+});
+
+gsap.utils.toArray('.social-card').forEach((card,i)=>{
+    gsap.from(card,{
+        y:50, opacity:0, duration:0.7, delay:i*0.15,
+        ease:"back.out(1.5)",
+        scrollTrigger:{trigger:card,start:"top 90%",once:true}
+    });
+});
+</script>
+</body>
+</html>
